@@ -1,31 +1,45 @@
-use crate::{configuration::Settings, routes::home};
+use crate::{
+    configuration::Settings,
+    routes::{health_check, home},
+};
 use actix_web::{dev::Server, web, App, HttpServer};
+use std::net::TcpListener;
 
 pub struct Application {
     server: Server,
+    port: u16,
 }
 
 impl Application {
     /// Build the application.
     pub fn build(configuration: Settings) -> Result<Self, std::io::Error> {
-        // Get the socket address.
+        // Get the socket address and port.
         let address = format!(
             "{}:{}",
             configuration.application.host, configuration.application.port
         );
+        let listener = TcpListener::bind(address)?;
+        let port = listener.local_addr().unwrap().port();
 
         // Create the HTTP server.
         //
         // The HTTP server must be awaited or polled in order to start running.
         let server = HttpServer::new(|| {
             App::new()
-                // Endpoint.
+                // Endpoints.
                 .route("/", web::get().to(home))
+                .route("/health_check", web::get().to(health_check))
         })
-        .bind(address)?
+        // Bind the socket address.
+        .listen(listener)?
         .run();
 
-        Ok(Self { server })
+        Ok(Self { server, port })
+    }
+
+    /// Return the port.
+    pub fn port(&self) -> u16 {
+        self.port
     }
 
     /// Run the application.

@@ -1,4 +1,5 @@
-use actix_web::{dev::Server, web, App, HttpResponse, HttpServer};
+use crate::routes::home;
+use actix_web::{dev::Server, web, App, HttpServer};
 
 pub struct Application {
     server: Server,
@@ -13,7 +14,7 @@ impl Application {
         let server = HttpServer::new(|| {
             App::new()
                 // Endpoint.
-                .route("/", web::get().to(HttpResponse::Ok))
+                .route("/", web::get().to(home))
         })
         .bind("127.0.0.1:8000")?
         .run();

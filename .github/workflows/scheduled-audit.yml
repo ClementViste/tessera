@@ -1,0 +1,16 @@
+name: Scheduled audit
+
+# Run the following job every day.
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  # Check for known security vulnerabilities.
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - uses: actions-rs/audit-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}

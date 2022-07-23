@@ -4,4 +4,15 @@ version = "0.1.0"
 authors = ["Clement VISTE <clementviste36@gmail.com>"]
 edition = "2021"
 
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+path = "src/main.rs"
+name = "tessera"
+
 [dependencies]
+# Asynchronous runtime.
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+# Web framework.
+actix-web = { version = "4", default-features = false }

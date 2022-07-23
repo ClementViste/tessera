@@ -16,3 +16,8 @@ name = "tessera"
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 # Web framework.
 actix-web = { version = "4", default-features = false }
+# Configuration management.
+config = { version = "0.13", default-features = false, features = ["yaml"] }
+# Serialization and deserialization framework.
+serde = { version = "1", features = ["derive"] }
+serde-aux = { version = "3", default-features = false }

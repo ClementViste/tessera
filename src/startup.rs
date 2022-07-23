@@ -1,4 +1,4 @@
-use crate::routes::home;
+use crate::{configuration::Settings, routes::home};
 use actix_web::{dev::Server, web, App, HttpServer};
 
 pub struct Application {
@@ -7,7 +7,13 @@ pub struct Application {
 
 impl Application {
     /// Build the application.
-    pub fn build() -> Result<Self, std::io::Error> {
+    pub fn build(configuration: Settings) -> Result<Self, std::io::Error> {
+        // Get the socket address.
+        let address = format!(
+            "{}:{}",
+            configuration.application.host, configuration.application.port
+        );
+
         // Create the HTTP server.
         //
         // The HTTP server must be awaited or polled in order to start running.
@@ -16,7 +22,7 @@ impl Application {
                 // Endpoint.
                 .route("/", web::get().to(home))
         })
-        .bind("127.0.0.1:8000")?
+        .bind(address)?
         .run();
 
         Ok(Self { server })

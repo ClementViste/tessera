@@ -14,6 +14,9 @@ pub struct Application {
 impl Application {
     /// Build the application.
     pub fn build(configuration: Settings) -> Result<Self, std::io::Error> {
+        // Get the connection pool for the Postgres database.
+        let connection_pool = configuration.database.get_connection_pool();
+
         // Get the socket address and port.
         let address = format!(
             "{}:{}",
@@ -22,10 +25,13 @@ impl Application {
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();
 
+        // Create application data.
+        let db_pool = web::Data::new(connection_pool);
+
         // Create the HTTP server.
         //
         // The HTTP server must be awaited or polled in order to start running.
-        let server = HttpServer::new(|| {
+        let server = HttpServer::new(move || {
             App::new()
                 // Middleware.
                 .wrap(TracingLogger::default())
@@ -33,6 +39,8 @@ impl Application {
                 .route("/", web::get().to(home))
                 .route("/health_check", web::get().to(health_check))
                 .route("/tickets", web::post().to(create_ticket))
+                // Set application data.
+                .app_data(db_pool.clone())
         })
         // Bind the socket address.
         .listen(listener)?

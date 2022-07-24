@@ -1,4 +1,32 @@
-use tessera::{configuration::get_configuration, startup::Application};
+use std::sync::Once;
+use tessera::{
+    configuration::get_configuration,
+    startup::Application,
+    telemetry::{get_subscriber, init_subscriber},
+};
+
+// Ensure that the `TRACING` stack is only initialized once.
+static TRACING: Once = Once::new();
+
+/// Initialize telemetry.
+fn initialize_telemetry() {
+    TRACING.call_once(|| {
+        // Set the name of the filter and the subscriber.
+        let filter_name = "info".to_string();
+        let subscriber_name = "test".to_string();
+
+        // Check if the `TEST_LOG` environment variable is set.
+        //
+        // Print logs if set, otherwise discard logs.
+        if std::env::var("TEST_LOG").is_ok() {
+            let subscriber = get_subscriber(subscriber_name, filter_name, std::io::stdout);
+            init_subscriber(subscriber);
+        } else {
+            let subscriber = get_subscriber(subscriber_name, filter_name, std::io::sink);
+            init_subscriber(subscriber);
+        };
+    })
+}
 
 pub struct TestApp {
     pub address: String,
@@ -17,6 +45,11 @@ impl TestApp {
 
 /// Build and then run the test application.
 pub async fn spawn_test_app() -> TestApp {
+    // Initialize telemetry.
+    //
+    // Only execute the following code once.
+    initialize_telemetry();
+
     // Get the configuration values.
     let configuration = {
         let mut configuration =

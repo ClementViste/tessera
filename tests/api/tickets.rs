@@ -17,6 +17,30 @@ async fn create_ticket_returns_a_200_for_valid_form_data() {
     assert_eq!(response.status().as_u16(), 200);
 }
 
+// Must persist the new ticket,
+// when a `POST` request is received at `/tickets` with valid form data .
+#[tokio::test]
+async fn create_ticket_persists_the_new_ticket() {
+    // Build and then run the test application.
+    let app = spawn_test_app().await;
+
+    // Create the body of the request.
+    let body = "title=Issue with ...&description=After doing ...";
+
+    // Send a request.
+    app.post_tickets(body.into()).await;
+
+    // Fetch the saved ticket.
+    let saved = sqlx::query!("SELECT title, description FROM tickets",)
+        .fetch_one(&app.db_pool)
+        .await
+        .expect("Failed to fetch the saved ticket");
+
+    // Check.
+    assert_eq!(saved.title, "Issue with ...");
+    assert_eq!(saved.description, "After doing ...");
+}
+
 // Must return a `400 Bad Request` response,
 // when a `POST` request is received at `/tickets` with missing data.
 #[tokio::test]

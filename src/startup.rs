@@ -1,6 +1,6 @@
 use crate::{
     configuration::Settings,
-    routes::{health_check, home},
+    routes::{create_ticket, health_check, home},
 };
 use actix_web::{dev::Server, web, App, HttpServer};
 use std::net::TcpListener;
@@ -32,6 +32,7 @@ impl Application {
                 // Endpoints.
                 .route("/", web::get().to(home))
                 .route("/health_check", web::get().to(health_check))
+                .route("/tickets", web::post().to(create_ticket))
         })
         // Bind the socket address.
         .listen(listener)?

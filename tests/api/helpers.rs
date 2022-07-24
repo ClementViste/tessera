@@ -41,6 +41,17 @@ impl TestApp {
             .await
             .expect("Failed to execute request")
     }
+
+    /// Create a `POST` request, send it at `/tickets` and then return the response.
+    pub async fn post_tickets(&self, body: String) -> reqwest::Response {
+        reqwest::Client::new()
+            .post(&format!("{}/tickets", &self.address))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body)
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
 }
 
 /// Build and then run the test application.

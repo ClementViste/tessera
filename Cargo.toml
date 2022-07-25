@@ -33,7 +33,11 @@ tracing-actix-web = "0.6"
 secrecy = { version = "0.8", features = ["serde"] }
 # Random UUID generator.
 uuid = { version = "1", features = ["v4"] }
+# Split strings.
+unicode-segmentation = "1"
 
 [dev-dependencies]
 # HTTP client.
 reqwest = { version = "0.11", default-features = false }
+# Provide additional assert macros.
+claim = "0.5"

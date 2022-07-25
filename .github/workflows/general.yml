@@ -78,6 +78,9 @@ jobs:
           sudo apt-get install libpq-dev -y
           cargo install --version=0.6.0 sqlx-cli --no-default-features --features native-tls,postgres
           SKIP_DOCKER=true ./scripts/init_postgres.sh
+      - name: Check metadata file needed for an offline build
+        run: |
+          cargo sqlx prepare --check -- --bin tessera
       - uses: actions-rs/cargo@v1
         with:
           command: test

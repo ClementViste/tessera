@@ -1,5 +1,9 @@
-use crate::domain::{NewTicket, TicketDescription, TicketTitle};
-use actix_web::{web, HttpResponse};
+use crate::{
+    domain::{NewTicket, TicketDescription, TicketTitle},
+    helpers::error_chain_fmt,
+};
+use actix_web::{http::StatusCode, web, HttpResponse, ResponseError};
+use anyhow::Context;
 use sqlx::PgPool;
 
 #[derive(serde::Deserialize)]
@@ -23,6 +27,31 @@ impl TryFrom<NewTicketFormData> for NewTicket {
     }
 }
 
+#[derive(thiserror::Error)]
+pub enum NewTicketError {
+    #[error("{0}")]
+    ValidationError(String),
+    #[error(transparent)]
+    UnexpectedError(#[from] anyhow::Error),
+}
+
+impl std::fmt::Debug for NewTicketError {
+    /// Format the value using the given formatter.
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        error_chain_fmt(self, f)
+    }
+}
+
+impl ResponseError for NewTicketError {
+    /// Return appropriate status code for error.
+    fn status_code(&self) -> StatusCode {
+        match self {
+            NewTicketError::ValidationError(_) => StatusCode::BAD_REQUEST,
+            NewTicketError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
+}
+
 /// Get called only if the format is `application/x-www-form-urlencoded`,
 /// and the content of the request could be deserialized to the `NewTicketFormData` struct.
 #[tracing::instrument(
@@ -36,20 +65,16 @@ impl TryFrom<NewTicketFormData> for NewTicket {
 pub async fn create_ticket(
     pool: web::Data<PgPool>,
     form: web::Form<NewTicketFormData>,
-) -> HttpResponse {
+) -> Result<HttpResponse, NewTicketError> {
     // Parse the new ticket.
-    let new_ticket = match form.0.try_into() {
-        Ok(form) => form,
-        Err(_) => {
-            return HttpResponse::BadRequest().finish();
-        }
-    };
+    let new_ticket = form.0.try_into().map_err(NewTicketError::ValidationError)?;
 
     // Insert the new ticket details into the tickets table.
-    match insert_ticket(&pool, &new_ticket).await {
-        Ok(_) => HttpResponse::Ok().finish(),
-        Err(_) => HttpResponse::InternalServerError().finish(),
-    }
+    insert_ticket(&pool, &new_ticket)
+        .await
+        .context("Failed to insert the new ticket details into the tickets table")?;
+
+    Ok(HttpResponse::Ok().finish())
 }
 
 #[tracing::instrument(

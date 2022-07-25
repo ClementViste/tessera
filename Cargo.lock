@@ -174,6 +174,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "anyhow"
+version = "1.0.58"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bb07d2053ccdbe10e2af2995a2f116c1330396493dc1269f6a91d0ae82e19704"
+
+[[package]]
 name = "async-trait"
 version = "0.1.56"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1459,6 +1465,7 @@ name = "tessera"
 version = "0.1.0"
 dependencies = [
  "actix-web",
+ "anyhow",
  "claim",
  "config",
  "reqwest",
@@ -1466,6 +1473,7 @@ dependencies = [
  "serde",
  "serde-aux",
  "sqlx",
+ "thiserror",
  "tokio",
  "tracing",
  "tracing-actix-web",

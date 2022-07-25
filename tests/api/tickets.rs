@@ -99,3 +99,28 @@ async fn create_ticket_returns_a_400_when_fields_are_present_but_invalid() {
         );
     }
 }
+
+// Must return a `500 Internal Server Error` response,
+// when a `POST` request is received at `/tickets` when there is a fatal database error.
+#[tokio::test]
+async fn create_ticket_returns_a_500_when_there_is_a_fatal_database_error() {
+    // Build and then run the test application.
+    let app = spawn_test_app().await;
+
+    // Create the body of the request.
+    let body = "title=Issue with ...&description=After doing ...";
+
+    // Remove the title column from the tickets table.
+    sqlx::query!("ALTER TABLE tickets DROP COLUMN title",)
+        .execute(&app.db_pool)
+        .await
+        .expect("Failed to drop the title column from the tickets table");
+
+    // Send a request and then return the response.
+    //
+    // Because of the removed column this will trigger a fatal database error.
+    let response = app.post_tickets(body.into()).await;
+
+    // Check.
+    assert_eq!(response.status().as_u16(), 500);
+}

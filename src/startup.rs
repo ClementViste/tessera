@@ -13,7 +13,7 @@ pub struct Application {
 
 impl Application {
     /// Build the application.
-    pub fn build(configuration: Settings) -> Result<Self, std::io::Error> {
+    pub fn build(configuration: Settings) -> Result<Self, anyhow::Error> {
         // Get the connection pool for the Postgres database.
         let connection_pool = configuration.database.get_connection_pool();
 

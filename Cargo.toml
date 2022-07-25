@@ -17,7 +17,7 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 # Web framework.
 actix-web = { version = "4", default-features = false }
 # SQL toolkit.
-sqlx = { version = "0.6.0", default-features = false, features = ["runtime-actix-rustls", "macros", "postgres", "migrate"] }
+sqlx = { version = "0.6.0", default-features = false, features = ["runtime-actix-rustls", "macros", "postgres", "migrate", "offline"] }
 # Configuration management.
 config = { version = "0.13", default-features = false, features = ["yaml"] }
 # Serialization and deserialization framework.

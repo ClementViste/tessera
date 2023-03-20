@@ -19,3 +19,8 @@ tokio = { version = "1", default-features = false, features = [
 ] }
 # Web framework.
 actix-web = { version = "4", default-features = false }
+# Configuration management.
+config = { version = "0.13", default-features = false, features = ["yaml"] }
+# Serialization and deserialization framework.
+serde = { version = "1", default-features = false, features = ["derive"] }
+serde-aux = { version = "4", default-features = false }

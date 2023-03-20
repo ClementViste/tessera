@@ -1,7 +1,15 @@
-use tessera::{configuration::get_configuration, startup::Application};
+use tessera::{
+    configuration::get_configuration,
+    startup::Application,
+    telemetry::{get_subscriber, init_subscriber},
+};
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
+    // Initialize telemetry.
+    let subscriber = get_subscriber("tessera".into(), "info".into(), std::io::stdout);
+    init_subscriber(subscriber);
+
     let configuration = get_configuration().expect("Failed to get the configuration values");
 
     let application = Application::new(configuration)?;

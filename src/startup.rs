@@ -1,6 +1,7 @@
 use crate::{configuration::Settings, routes::health_check};
 use actix_web::{dev::Server, web, App, HttpServer};
 use std::net::TcpListener;
+use tracing_actix_web::TracingLogger;
 
 /// Representation of the application.
 pub struct Application {
@@ -23,6 +24,8 @@ impl Application {
         // The HTTP server must be awaited or polled in order to start running.
         let server = HttpServer::new(|| {
             App::new()
+                // Middleware.
+                .wrap(TracingLogger::default())
                 // Endpoint.
                 .route("/health_check", web::get().to(health_check))
         })

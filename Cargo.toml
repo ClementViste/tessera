@@ -24,6 +24,14 @@ config = { version = "0.13", default-features = false, features = ["yaml"] }
 # Serialization and deserialization framework.
 serde = { version = "1", default-features = false, features = ["derive"] }
 serde-aux = { version = "4", default-features = false }
+# Telemetry.
+tracing = { version = "0.1", default-features = false }
+tracing-subscriber = { version = "0.3", default-features = false, features = [
+    "env-filter",
+] }
+tracing-bunyan-formatter = { version = "0.3", default-features = false }
+tracing-log = { version = "0.1", default-features = false }
+tracing-actix-web = { version = "0.7", default-features = false }
 
 [dev-dependencies]
 # HTTP client.

@@ -1,4 +1,7 @@
-use crate::{configuration::Settings, routes::health_check};
+use crate::{
+    configuration::Settings,
+    routes::{create_ticket, health_check},
+};
 use actix_web::{dev::Server, web, App, HttpServer};
 use std::net::TcpListener;
 use tracing_actix_web::TracingLogger;
@@ -26,8 +29,9 @@ impl Application {
             App::new()
                 // Middleware.
                 .wrap(TracingLogger::default())
-                // Endpoint.
+                // Endpoints.
                 .route("/health_check", web::get().to(health_check))
+                .route("/tickets/new", web::post().to(create_ticket))
         })
         .listen(listener)?
         .run();

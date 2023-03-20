@@ -44,6 +44,17 @@ impl TestApp {
             .await
             .expect("Failed to execute request")
     }
+
+    /// Creates a `POST` request, send it at `/tickets/new` and then return the response.
+    pub async fn post_tickets(&self, body: String) -> Response {
+        Client::new()
+            .post(&format!("{}/tickets/new", &self.address))
+            .header("Content-Type", "application/x-www-form-urlencoded")
+            .body(body)
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
 }
 
 /// Creates and then run the test application.

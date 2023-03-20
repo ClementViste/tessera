@@ -1,0 +1,7 @@
+[package]
+name = "tessera"
+version = "0.1.0"
+authors = ["Clément VISTE <clementviste36@gmail.com>"]
+edition = "2021"
+
+[dependencies]

@@ -1,9 +1,11 @@
-use crate::configuration::Settings;
-use actix_web::{dev::Server, web, App, HttpResponse, HttpServer};
+use crate::{configuration::Settings, routes::health_check};
+use actix_web::{dev::Server, web, App, HttpServer};
+use std::net::TcpListener;
 
 /// Representation of the application.
 pub struct Application {
     server: Server,
+    port: u16,
 }
 
 impl Application {
@@ -13,6 +15,8 @@ impl Application {
             "{}:{}",
             configuration.application.host, configuration.application.port
         );
+        let listener = TcpListener::bind(address)?;
+        let port = listener.local_addr().unwrap().port();
 
         // Create the HTTP server.
         //
@@ -20,12 +24,17 @@ impl Application {
         let server = HttpServer::new(|| {
             App::new()
                 // Endpoint.
-                .route("/", web::get().to(HttpResponse::Ok))
+                .route("/health_check", web::get().to(health_check))
         })
-        .bind(address)?
+        .listen(listener)?
         .run();
 
-        Ok(Self { server })
+        Ok(Self { server, port })
+    }
+
+    /// Returns the port.
+    pub fn port(&self) -> u16 {
+        self.port
     }
 
     /// Runs the application until stopped.

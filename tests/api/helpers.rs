@@ -1,10 +1,12 @@
 use reqwest::{Client, Response};
+use sqlx::{migrate, Connection, Executor, PgConnection, PgPool};
 use std::sync::Once;
 use tessera::{
-    configuration::get_configuration,
+    configuration::{get_configuration, DatabaseSettings},
     startup::Application,
     telemetry::{get_subscriber, init_subscriber},
 };
+use uuid::Uuid;
 
 // Ensures that the `TRACING` stack is only initialized once.
 static TRACING: Once = Once::new();
@@ -32,6 +34,7 @@ fn initialize_telemetry() {
 
 /// Representation of a test application.
 pub struct TestApp {
+    pub db_pool: PgPool,
     pub address: String,
 }
 
@@ -64,17 +67,53 @@ pub async fn create_and_run_test_app() -> TestApp {
     let configuration = {
         let mut configuration =
             get_configuration().expect("Failed to get the configuration values");
+        // Randomize the name of the database.
+        configuration.database.database_name = Uuid::new_v4().to_string();
         // Find a random available port by triggering an OS scan using the port 0.
         configuration.application.port = 0;
 
         configuration
     };
 
-    let application = Application::new(configuration).expect("Failed to create the application");
+    configure_database(&configuration.database).await;
+
+    let application =
+        Application::new(configuration.clone()).expect("Failed to create the application");
     let application_port = application.port();
     let _ = tokio::spawn(application.run_until_stopped());
 
     TestApp {
+        db_pool: configuration.database.get_connection_pool(),
         address: format!("http://127.0.0.1:{}", application_port),
     }
+}
+
+/// Returns a pool to a newly created and migrated database.
+///
+/// # Implementation Notes
+///
+/// Requires manual clean up.
+pub async fn configure_database(database: &DatabaseSettings) -> PgPool {
+    let mut connection = PgConnection::connect_with(&database.without_db())
+        .await
+        .expect("Failed to connect to the Postgres instance");
+    connection
+        .execute(&*format!(
+            r#"
+            CREATE DATABASE "{}";
+            "#,
+            database.database_name
+        ))
+        .await
+        .expect("Failed to create the database");
+
+    let connection_pool = PgPool::connect_with(database.with_db())
+        .await
+        .expect("Failed to connect to the database");
+    migrate!("./migrations")
+        .run(&connection_pool)
+        .await
+        .expect("Failed to migrate the database");
+
+    connection_pool
 }

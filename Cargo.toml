@@ -19,6 +19,13 @@ tokio = { version = "1", default-features = false, features = [
 ] }
 # Web framework.
 actix-web = { version = "4", default-features = false }
+# SQL toolkit.
+sqlx = { version = "0.6", default-features = false, features = [
+    "runtime-actix-rustls",
+    "macros",
+    "postgres",
+    "migrate",
+] }
 # Configuration management.
 config = { version = "0.13", default-features = false, features = ["yaml"] }
 # Serialization and deserialization framework.
@@ -32,6 +39,13 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
 tracing-bunyan-formatter = { version = "0.3", default-features = false }
 tracing-log = { version = "0.1", default-features = false }
 tracing-actix-web = { version = "0.7", default-features = false }
+# Handle secret values.
+secrecy = { version = "0.8", default-features = false, features = [
+    "alloc",
+    "serde",
+] }
+# Random UUID generator.
+uuid = { version = "1", default-features = false, features = ["v4"] }
 
 [dev-dependencies]
 # HTTP client.

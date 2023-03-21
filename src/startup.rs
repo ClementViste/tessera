@@ -15,6 +15,8 @@ pub struct Application {
 impl Application {
     /// Creates the application.
     pub fn new(configuration: Settings) -> Result<Self, std::io::Error> {
+        let connection_pool = configuration.database.get_connection_pool();
+
         let address = format!(
             "{}:{}",
             configuration.application.host, configuration.application.port
@@ -22,16 +24,21 @@ impl Application {
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr().unwrap().port();
 
+        // Create application data.
+        let db_pool = web::Data::new(connection_pool);
+
         // Create the HTTP server.
         //
         // The HTTP server must be awaited or polled in order to start running.
-        let server = HttpServer::new(|| {
+        let server = HttpServer::new(move || {
             App::new()
                 // Middleware.
                 .wrap(TracingLogger::default())
                 // Endpoints.
                 .route("/health_check", web::get().to(health_check))
                 .route("/tickets/new", web::post().to(create_ticket))
+                // Set application data.
+                .app_data(db_pool.clone())
         })
         .listen(listener)?
         .run();

@@ -84,3 +84,21 @@ async fn create_ticket_returns_a_400_when_invalid_data() {
         );
     }
 }
+
+// Must return a `500 Internal Server Error` response,
+// when a `POST` request triggering a fatal database error is received at `/tickets/new`.
+#[tokio::test]
+async fn create_ticket_returns_a_500_when_fatal_database_error() {
+    let test_app = create_and_run_test_app().await;
+
+    let body = "title=Issue with ...&description=After doing ...";
+
+    sqlx::query!("ALTER TABLE tickets DROP COLUMN title",)
+        .execute(&test_app.db_pool)
+        .await
+        .expect("Failed to drop the title column from the tickets table");
+
+    // Because of the dropped column this will trigger a fatal database error.
+    let response = test_app.post_tickets(body.into()).await;
+    assert_eq!(response.status().as_u16(), 500);
+}

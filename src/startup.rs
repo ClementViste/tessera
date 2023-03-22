@@ -14,7 +14,7 @@ pub struct Application {
 
 impl Application {
     /// Creates the application.
-    pub fn new(configuration: Settings) -> Result<Self, std::io::Error> {
+    pub fn new(configuration: Settings) -> Result<Self, anyhow::Error> {
         let connection_pool = configuration.database.get_connection_pool();
 
         let address = format!(

@@ -46,7 +46,11 @@ secrecy = { version = "0.8", default-features = false, features = [
 ] }
 # Random UUID generator.
 uuid = { version = "1", default-features = false, features = ["v4"] }
+# Split strings.
+unicode-segmentation = { version = "1", default-features = false }
 
 [dev-dependencies]
 # HTTP client.
 reqwest = { version = "0.11", default-features = false }
+# Provide additional assert macros.
+claims = { version = "0.7", default-features = false }

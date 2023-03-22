@@ -52,3 +52,35 @@ async fn create_ticket_returns_a_400_when_missing_data() {
         );
     }
 }
+
+// Must return a `400 Bad Request` response,
+// when a `POST` request with invalid data is received at `/tickets/new`.
+#[tokio::test]
+async fn create_ticket_returns_a_400_when_invalid_data() {
+    let test_app = create_and_run_test_app().await;
+
+    let test_cases = vec![
+        (
+            "title=Issue with ...&description=",
+            "missing a correct description",
+        ),
+        (
+            "title=&description=After doing ...",
+            "missing a correct title",
+        ),
+        (
+            "title=&description=",
+            "missing a correct title and description",
+        ),
+    ];
+
+    for (invalid_body, error_message) in test_cases {
+        let response = test_app.post_tickets(invalid_body.into()).await;
+        assert_eq!(
+            response.status().as_u16(),
+            400,
+            "The API did not fail with a `400 Bad Request` response when the payload was {}.",
+            error_message
+        );
+    }
+}

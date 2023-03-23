@@ -25,6 +25,7 @@ sqlx = { version = "0.6", default-features = false, features = [
     "macros",
     "postgres",
     "migrate",
+    "offline",
 ] }
 # Configuration management.
 config = { version = "0.13", default-features = false, features = ["yaml"] }

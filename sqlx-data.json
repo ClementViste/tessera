@@ -1,0 +1,16 @@
+{
+  "db": "PostgreSQL",
+  "186ddabe5dd31ddadd8f91e7e06db8fe33b1b5094cab26296b826645f2acc250": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        INSERT INTO tickets (title, description)\n        VALUES ($1, $2)\n        "
+  }
+}

@@ -1,0 +1,9 @@
+# Ignore everything.
+**
+
+# Allow only the following folders and files.
+!configuration/**
+!src/**
+!Cargo.lock
+!Cargo.toml
+!sqlx-data.json

@@ -1,4 +1,4 @@
-use config::{Config, ConfigError, File};
+use config::{Config, ConfigError, Environment, File};
 use secrecy::{ExposeSecret, Secret};
 use serde::Deserialize;
 use serde_aux::field_attributes::deserialize_number_from_string;
@@ -122,6 +122,12 @@ pub fn get_configuration() -> Result<Settings, ConfigError> {
         .add_source(File::from(configuration_directory.join("base")).required(true))
         // Layer on the environment-specific values.
         .add_source(File::from(configuration_directory.join(environment.as_str())).required(true))
+        // Layer on DigitalOcean's specific values.
+        .add_source(
+            Environment::with_prefix("APP")
+                .prefix_separator("_")
+                .separator("__"),
+        )
         .build()?;
 
     settings.try_deserialize()

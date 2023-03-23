@@ -55,7 +55,7 @@ jobs:
       - name: Enforce linting
         run: cargo clippy -- -D warnings
 
-  # Checks if unit and integration tests are succeeding.
+  # Checks if unit and integration tests are succeeding and if the metadata file is up-to-date.
   test:
     name: Test
     runs-on: ubuntu-latest
@@ -84,6 +84,9 @@ jobs:
         run: |
           sudo apt-get install libpq-dev -y
           SKIP_DOCKER=true ./scripts/init_postgres.sh
+      - name: Check metadata file
+        run: |
+          cargo sqlx prepare --check -- --bin tessera
       - name: Run tests
         run: cargo test
 

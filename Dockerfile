@@ -1,6 +1,6 @@
 # Chef stage.
 # Latest Rust stable release.
-FROM lukemathwalker/cargo-chef:latest-rust-1.68.0 as chef
+FROM lukemathwalker/cargo-chef:latest-rust-1.68.1 as chef
 # Switch the working directory to `/app`.
 WORKDIR /app
 # Update and then install LLD.

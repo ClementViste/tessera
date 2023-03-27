@@ -12,6 +12,7 @@ use sqlx::{
 pub struct Settings {
     pub application: ApplicationSettings,
     pub database: DatabaseSettings,
+    pub redis_uri: Secret<String>,
 }
 
 /// Representation of the application's settings.
@@ -20,6 +21,7 @@ pub struct ApplicationSettings {
     pub host: String,
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
+    pub hmac_secret: Secret<String>,
 }
 
 /// Representation of the database's settings.

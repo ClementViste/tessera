@@ -12,7 +12,7 @@ async fn main() -> anyhow::Result<()> {
 
     let configuration = get_configuration().expect("Failed to get the configuration values");
 
-    let application = Application::new(configuration)?;
+    let application = Application::new(configuration).await?;
     application.run_until_stopped().await?;
 
     Ok(())

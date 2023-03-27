@@ -19,18 +19,30 @@ tokio = { version = "1", default-features = false, features = [
 ] }
 # Web framework.
 actix-web = { version = "4", default-features = false }
+actix-web-lab = { version = "0.19", default-features = false, features = [
+    "actix-web-lab-derive",
+] }
+actix-web-flash-messages = { version = "0.4", default-features = false, features = [
+    "cookies",
+] }
+# Session management.
+actix-session = { version = "0.7", default-features = false, features = [
+    "redis-rs-tls-session",
+] }
 # SQL toolkit.
 sqlx = { version = "0.6", default-features = false, features = [
     "runtime-actix-rustls",
     "macros",
     "postgres",
     "migrate",
+    "uuid",
     "offline",
 ] }
 # Configuration management.
 config = { version = "0.13", default-features = false, features = ["yaml"] }
 # Serialization and deserialization framework.
 serde = { version = "1", default-features = false, features = ["derive"] }
+serde_json = { version = "1", default-features = false }
 serde-aux = { version = "4", default-features = false }
 # Telemetry.
 tracing = { version = "0.1", default-features = false }
@@ -48,13 +60,22 @@ secrecy = { version = "0.8", default-features = false, features = [
     "alloc",
     "serde",
 ] }
+# Random number generator.
+rand = { version = "0.8", default-features = false, features = ["std_rng"] }
 # Random UUID generator.
-uuid = { version = "1", default-features = false, features = ["v4"] }
+uuid = { version = "1", default-features = false, features = ["v4", "serde"] }
+# Base64 encoder/decoder.
+base64 = { version = "0.21", default-features = false }
+# Password hasher.
+argon2 = { version = "0.5", default-features = false, features = ["std"] }
 # Split strings.
 unicode-segmentation = { version = "1", default-features = false }
 
 [dev-dependencies]
 # HTTP client.
-reqwest = { version = "0.11", default-features = false }
+reqwest = { version = "0.11", default-features = false, features = [
+    "rustls-tls",
+    "cookies",
+] }
 # Provide additional assert macros.
 claims = { version = "0.7", default-features = false }

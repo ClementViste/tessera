@@ -3,7 +3,7 @@ use crate::{
     configuration::Settings,
     routes::{
         change_password, change_password_form, create_ticket, create_ticket_form, dashboard,
-        health_check, login, login_form, logout,
+        health_check, home, login, login_form, logout,
     },
 };
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
@@ -59,6 +59,7 @@ impl Application {
                     cookie::Key::from(hmac_secret.0.expose_secret().as_bytes()),
                 ))
                 // Endpoints.
+                .route("/", web::get().to(home))
                 .route("/health_check", web::get().to(health_check))
                 .route("/login", web::get().to(login_form))
                 .route("/login", web::post().to(login))

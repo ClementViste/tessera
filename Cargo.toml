@@ -25,6 +25,7 @@ actix-web-lab = { version = "0.19", default-features = false, features = [
 actix-web-flash-messages = { version = "0.4", default-features = false, features = [
     "cookies",
 ] }
+actix-files = { version = "0.6", default-features = false }
 # Session management.
 actix-session = { version = "0.7", default-features = false, features = [
     "redis-rs-tls-session",
@@ -38,6 +39,8 @@ sqlx = { version = "0.6", default-features = false, features = [
     "uuid",
     "offline",
 ] }
+# Templating engine.
+askama = { version = "0.12", default-features = false }
 # Configuration management.
 config = { version = "0.13", default-features = false, features = ["yaml"] }
 # Serialization and deserialization framework.

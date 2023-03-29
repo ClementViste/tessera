@@ -44,6 +44,10 @@ RUN apt-get update -y \
 COPY --from=builder /app/target/release/tessera tessera
 # Copy the configuration files to the `runtime` environment.
 COPY configuration configuration
+# Copy the static files to the `runtime` environment.
+COPY static static
+# Copy the templates to the `runtime` environment.
+COPY templates templates
 # Set the `APP_ENVIRONMENT` environment variable to `production`.
 ENV APP_ENVIRONMENT production
 

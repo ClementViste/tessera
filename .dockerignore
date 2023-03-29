@@ -4,6 +4,8 @@
 # Allow only the following folders and files.
 !configuration/**
 !src/**
+!static/**
+!templates/**
 !Cargo.lock
 !Cargo.toml
 !sqlx-data.json

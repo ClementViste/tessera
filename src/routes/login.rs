@@ -5,10 +5,18 @@ use crate::{
 };
 use actix_web::{error::InternalError, http, web, HttpResponse, ResponseError};
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
+use askama::Template;
 use secrecy::Secret;
 use serde::Deserialize;
 use sqlx::PgPool;
 use std::fmt::{Debug, Write};
+
+/// Representation of the login template.
+#[derive(Template)]
+#[template(path = "login.html")]
+struct LoginTemplate {
+    msg_html: String,
+}
 
 /// Representation of a user credentials with form data.
 #[derive(Deserialize)]
@@ -48,40 +56,11 @@ pub async fn login_form(flash_messages: IncomingFlashMessages) -> HttpResponse {
         writeln!(msg_html, "{}", m.content()).unwrap();
     }
 
+    let body = LoginTemplate { msg_html }.render().unwrap();
+
     HttpResponse::Ok()
         .content_type(http::header::ContentType::html())
-        .body(format!(
-            r#"
-            <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-                    <title>Login</title>
-                </head>
-                <body>
-                    {msg_html}
-                    <form action="/login" method="post">
-                        <label>Username
-                            <input
-                                type="text"
-                                placeholder="Enter Username"
-                                name="username"
-                            >
-                        </label>
-                        <label>Password
-                            <input
-                                type="password"
-                                placeholder="Enter Password"
-                                name="password"
-                            >
-                        </label>
-                        <button type="submit">Login</button>
-                    </form>
-                    <p><a href="/">&lt;- Back</a></p>
-                </body>
-            </html>
-            "#,
-        ))
+        .body(body)
 }
 
 /// Logs in the user.

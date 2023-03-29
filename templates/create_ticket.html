@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p><i>{{msg_html}}</i></p>
+<form action="/dashboard/tickets/new" method="post">
+    <label>Title:<br>
+        <input type="text" placeholder="Enter Title" name="title" required>
+    </label>
+    <br>
+    <label>Description:<br>
+        <textarea type="text" placeholder="Enter Description" name="description" rows="20" cols="50"
+            required></textarea>
+    </label>
+    <br>
+    <button type="submit">Create the new ticket</button>
+</form>
+<p><a href="/dashboard/">&lt;- Back</a></p>
+{% endblock %}

@@ -6,6 +6,7 @@ use crate::{
         health_check, home, login, login_form, logout,
     },
 };
+use actix_files::Files;
 use actix_session::{storage::RedisSessionStore, SessionMiddleware};
 use actix_web::{cookie, dev::Server, web, App, HttpServer};
 use actix_web_flash_messages::{storage, FlashMessagesFramework};
@@ -51,6 +52,8 @@ impl Application {
         // The HTTP server must be awaited or polled in order to start running.
         let server = HttpServer::new(move || {
             App::new()
+                // Serve static files.
+                .service(Files::new("/static", "static"))
                 // Middlewares.
                 .wrap(TracingLogger::default())
                 .wrap(message_framework.clone())

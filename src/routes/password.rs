@@ -8,10 +8,18 @@ use actix_web::{
     {web, HttpResponse},
 };
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
+use askama::Template;
 use secrecy::{ExposeSecret, Secret};
 use serde::Deserialize;
 use sqlx::PgPool;
 use std::fmt::Write;
+
+/// Representation of the password template.
+#[derive(Template)]
+#[template(path = "password.html")]
+struct PasswordTemplate {
+    msg_html: String,
+}
 
 /// Representation of a user's password and new passwords with form data.
 #[derive(Deserialize)]
@@ -31,50 +39,11 @@ pub async fn change_password_form(
         writeln!(msg_html, "{}", m.content()).unwrap();
     }
 
+    let body = PasswordTemplate { msg_html }.render().unwrap();
+
     Ok(HttpResponse::Ok()
         .content_type(ContentType::html())
-        .body(format!(
-            r#"
-            <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-                    <title>Change Password</title>
-                </head>
-                <body>
-                    {msg_html}
-                    <form action="/dashboard/password" method="post">
-                        <label>Current password
-                            <input
-                                type="password"
-                                placeholder="Enter current password"
-                                name="current_password"
-                            >
-                        </label>
-                        <br>
-                        <label>New password
-                            <input
-                                type="password"
-                                placeholder="Enter new password"
-                                name="new_password"
-                            >
-                        </label>
-                        <br>
-                        <label>Confirm new password
-                            <input
-                                type="password"
-                                placeholder="Type the new password again"
-                                name="new_password_check"
-                            >
-                        </label>
-                        <br>
-                        <button type="submit">Change password</button>
-                    </form>
-                    <p><a href="/dashboard/">&lt;- Back</a></p>
-                </body>
-            </html>
-            "#,
-        )))
+        .body(body))
 }
 
 /// Changes the password.

@@ -10,9 +10,17 @@ use actix_web::{
 };
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
 use anyhow::Context;
+use askama::Template;
 use serde::Deserialize;
 use sqlx::PgPool;
 use std::fmt::{Debug, Write};
+
+/// Representation of the create ticket template.
+#[derive(Template)]
+#[template(path = "create_ticket.html")]
+struct CreateTicketTemplate {
+    msg_html: String,
+}
 
 /// Representation of a new ticket created with form data.
 #[derive(Deserialize)]
@@ -69,44 +77,11 @@ pub async fn create_ticket_form(
         writeln!(msg_html, "{}", m.content()).unwrap();
     }
 
+    let body = CreateTicketTemplate { msg_html }.render().unwrap();
+
     Ok(HttpResponse::Ok()
         .content_type(ContentType::html())
-        .body(format!(
-            r#"
-            <!DOCTYPE html>
-            <html lang="en">
-                <head>
-                    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-                    <title>Create Ticket</title>
-                </head>
-                <body>
-                    {msg_html}
-                    <form action="/dashboard/tickets/new" method="post">
-                        <label>Title:<br>
-                            <input
-                                type="text"
-                                placeholder="Enter Title"
-                                name="title"
-                            >
-                        </label>
-                        <br>
-                        <label>Description:<br>
-                            <textarea
-                                type="text"
-                                placeholder="Enter Description"
-                                name="description"
-                                rows="20"
-                                cols="50"
-                            ></textarea>
-                        </label>
-                        <br>
-                        <button type="submit">Create the new ticket</button>
-                    </form>
-                    <p><a href="/dashboard/">&lt;- Back</a></p>
-                </body>
-            </html>
-            "#,
-        )))
+        .body(body))
 }
 
 /// Creates a new ticket.

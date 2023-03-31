@@ -1,18 +1,27 @@
-{% extends "base.html" %}
+<header class="title">
+    <h1>Create ticket</h1>
+</header>
 
-{% block content %}
-<p><i>{{msg_html}}</i></p>
-<form action="/dashboard/tickets/new" method="post">
-    <label>Title:<br>
-        <input type="text" placeholder="Enter Title" name="title" required>
-    </label>
-    <br>
-    <label>Description:<br>
-        <textarea type="text" placeholder="Enter Description" name="description" rows="20" cols="50"
-            required></textarea>
-    </label>
-    <br>
-    <button type="submit">Create the new ticket</button>
+<header class="text">
+    <p>To create a ticket enter a title and a description!</p>
+</header>
+
+<header class="msg_html">
+    <p><em>{{msg_html}}</em></p>
+</header>
+
+<form hx-post="/dashboard/tickets/new" hx-swap="innerHTML" hx-target="article" class="form">
+    <div class="form-row">
+        <label for="title">Title</label>
+        <input id="title" name="title" type="text" placeholder="Enter title" required>
+    </div>
+    <div class="form-row">
+        <label for="description">Description</label>
+        <textarea id="description" name="description" placeholder="Enter description" required></textarea>
+    </div>
+    <button type="submit" class="button">Create ticket</button>
 </form>
-<p><a href="/dashboard/">&lt;- Back</a></p>
-{% endblock %}
+
+<button hx-get="/dashboard/" hx-swap="innerHTML" hx-target="article" class="back">
+    &lt;- Back
+</button>

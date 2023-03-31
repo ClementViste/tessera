@@ -2,15 +2,25 @@
 <html lang="en">
 
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="content-type" name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+        charset="UTF-8">
     <title>Tessera</title>
     <link rel="stylesheet" href="/static/css/styles.css">
+    <script src="/static/htmx/htmx@1.8.6.min.js"></script>
 </head>
 
 <body>
-    <div class="content">
-        {% block content %}{% endblock %}
-    </div>
+    <header class="section header">
+        {% block header %}{% endblock %}
+    </header>
+
+    <article class="section article">
+        {% block article %}{% endblock %}
+    </article>
+
+    <footer class="section footer">
+        {% block footer %}{% endblock %}
+    </footer>
 </body>
 
 </html>

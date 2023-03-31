@@ -1,8 +1,27 @@
 {% extends "base.html" %}
 
-{% block content %}
-<p>Welcome to tessera!</p>
-<form action="/login" method="get">
-    <input type="submit" value="Login">
-</form>
+{% block header %}
+<a hx-get="/" hx-swap="innerHTML" hx-target="body"><img class="logo" src="/static/images/tickets.svg"
+        alt="A ticket representing the logo of the application"></a>
+<a href="https://github.com/ClementViste/tessera"><img class="github" src="/static/images/github.svg"
+        alt="Logo of GitHub"></a>
+{% endblock %}
+
+{% block article %}
+<header class="title">
+    <h1>Welcome!</h1>
+</header>
+
+<header class="text">
+    <p><em>Tessera is a ticket tracker, to start using tessera you need to log in!</em></p>
+</header>
+
+<button hx-get="/login" hx-swap="innerHTML" hx-target="article" class="button">
+    Login!
+</button>
+{% endblock %}
+
+{% block footer %}
+<p class="email">Contact me at <a href="mailto:clementviste36@gmail.com">clementviste36@gmail.com</a></p>
+<p>&copy; 2023 Clement Viste</p>
 {% endblock %}

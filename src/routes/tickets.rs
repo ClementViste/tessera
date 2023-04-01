@@ -58,6 +58,17 @@ impl Debug for NewTicketError {
 }
 
 impl ResponseError for NewTicketError {
+    /// Creates full response for error.
+    fn error_response(&self) -> HttpResponse {
+        let msg_html = self.to_string();
+
+        let body = CreateTicketTemplate { msg_html }.render().unwrap();
+
+        HttpResponse::build(self.status_code())
+            .content_type(ContentType::html())
+            .body(body)
+    }
+
     /// Returns appropriate status code for error.
     fn status_code(&self) -> StatusCode {
         match self {

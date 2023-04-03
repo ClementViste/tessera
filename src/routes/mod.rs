@@ -4,6 +4,7 @@ mod home;
 mod login;
 mod logout;
 mod password;
+mod register;
 mod tickets;
 
 pub use dashboard::dashboard;
@@ -12,4 +13,5 @@ pub use home::home;
 pub use login::{login, login_form};
 pub use logout::logout;
 pub use password::{change_password, change_password_form};
+pub use register::{register, register_form};
 pub use tickets::{create_ticket, create_ticket_form};

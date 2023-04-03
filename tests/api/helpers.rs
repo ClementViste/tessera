@@ -112,6 +112,33 @@ impl TestApp {
             .expect("Failed to execute request")
     }
 
+    /// Creates a `GET` request, send it at `/register` and then return the response.
+    pub async fn get_register(&self) -> Response {
+        self.api_client
+            .get(&format!("{}/register", &self.address))
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
+
+    /// Returns the register full response text.
+    pub async fn get_register_html(&self) -> String {
+        self.get_register().await.text().await.unwrap()
+    }
+
+    /// Creates a `POST` request, send it at `/register` and then return the response.
+    pub async fn post_register<Body>(&self, body: &Body) -> Response
+    where
+        Body: serde::Serialize,
+    {
+        self.api_client
+            .post(&format!("{}/register", &self.address))
+            .form(body)
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
+
     /// Creates a `GET` request, send it at `/login` and then return the response.
     pub async fn get_login(&self) -> Response {
         self.api_client

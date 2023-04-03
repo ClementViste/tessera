@@ -4,4 +4,5 @@ mod helpers;
 mod login;
 mod logout;
 mod password;
+mod register;
 mod tickets;

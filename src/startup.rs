@@ -3,7 +3,7 @@ use crate::{
     configuration::Settings,
     routes::{
         change_password, change_password_form, create_ticket, create_ticket_form, dashboard,
-        health_check, home, login, login_form, logout,
+        health_check, home, login, login_form, logout, register, register_form,
     },
 };
 use actix_files::Files;
@@ -64,6 +64,8 @@ impl Application {
                 // Endpoints.
                 .route("/", web::get().to(home))
                 .route("/health_check", web::get().to(health_check))
+                .route("/register", web::get().to(register_form))
+                .route("/register", web::post().to(register))
                 .route("/login", web::get().to(login_form))
                 .route("/login", web::post().to(login))
                 .service(

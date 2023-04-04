@@ -263,7 +263,7 @@ pub async fn create_and_run_test_app() -> TestApp {
         .await
         .expect("Failed to create the application");
     let application_port = application.port();
-    let _ = tokio::spawn(application.run_until_stopped());
+    tokio::spawn(application.run_until_stopped());
 
     // Build the HTTP client.
     let client = reqwest::Client::builder()

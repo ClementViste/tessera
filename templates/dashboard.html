@@ -1,22 +1,14 @@
-<header class="title">
-    <h1>Dashboard</h1>
-</header>
+<aside class="aside">
+    {% include "aside.html" %}
+</aside>
 
-<header class="text">
-    <p>Welcome {{username}}!</p>
-    <p>Available actions:</p>
-</header>
+<div class="content">
+    <header class="title">
+        <h3>Dashboard</h3>
+    </header>
 
-<nav class="dashboard">
-    <button hx-get="/dashboard/tickets/new" hx-swap="innerHTML" hx-target="article" class="button">
-        Create a new ticket
-    </button>
-
-    <button hx-get="/dashboard/password" hx-swap="innerHTML" hx-target="article" class="button">
-        Change password
-    </button>
-
-    <button hx-post="/dashboard/logout" hx-swap="innerHTML" hx-target="article" class="button">
-        Logout
-    </button>
-</nav>
+    <header class="text">
+        <p>Welcome {{username}}!</p>
+        <p>You can find available actions in the panel.</p>
+    </header>
+</div>

@@ -1,0 +1,39 @@
+<nav class="aside-menu">
+    <div class="user">
+        <img class="image-user" src="/static/images/user.svg" alt="An avatar representing the user of the application">
+        <h2>{{username|capitalize}}</h2>
+    </div>
+
+    <div class="dashboard" hx-get="/dashboard/" hx-swap="innerHTML" hx-target=".content">
+        <img class="image-dashboard" src="/static/images/dashboard.svg"
+            alt="A house representing the dashboard of the application">
+        <h2>Dashboard</h2>
+    </div>
+
+    <div class="ticket">
+        <img class="image-ticket" src="/static/images/tickets.svg"
+            alt="A ticket representing actions related to ticket">
+        <h2>Ticket</h2>
+    </div>
+    <div class="create-ticket" hx-get="/dashboard/tickets/new" hx-swap="innerHTML" hx-target=".content">
+        <img class="image-create-ticket" src="/static/images/arrow.svg"
+            alt="A arrow showing that this is a submenu to `ticket`">
+        <h1>Create ticket</h1>
+    </div>
+
+    <div class="settings"><img class="image-settings" src="/static/images/settings.svg"
+            alt="A cog representing the settings of the user">
+        <h2>Settings</h2>
+    </div>
+    <div class="change-password" hx-get="/dashboard/password" hx-swap="innerHTML" hx-target=".content">
+        <img class="image-change-password" src="/static/images/arrow.svg"
+            alt="A arrow showing that this is a submenu to `settings`">
+        <h1>Change password</h1>
+    </div>
+
+    <div class="logout" hx-post="/dashboard/logout" hx-swap="innerHTML" hx-target="article">
+        <img class="image-logout" src="/static/images/close.svg"
+            alt="A cross representing the log out of the application">
+        <h2>Logout</h2>
+    </div>
+</nav>

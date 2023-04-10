@@ -14,4 +14,6 @@ pub use login::{login, login_form};
 pub use logout::logout;
 pub use password::{change_password, change_password_form};
 pub use register::{register, register_form};
-pub use tickets::{create_ticket, create_ticket_form};
+pub use tickets::{
+    create_ticket, create_ticket_form, get_ticket, get_tickets, see_ticket, see_tickets,
+};

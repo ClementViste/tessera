@@ -1,0 +1,11 @@
+<header class="title">
+    <h1>Ticket #{{ticket.id}} - {{ticket.title}}</h1>
+</header>
+
+<header class="text">
+    <p>{{ticket.description}}</p>
+</header>
+
+<button hx-get="/dashboard/" hx-swap="innerHTML" hx-target="article" class="back">
+    &lt;- Back
+</button>

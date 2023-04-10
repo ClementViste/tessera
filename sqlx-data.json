@@ -46,6 +46,38 @@
     },
     "query": "\n        SELECT username\n        FROM users\n        WHERE user_id = $1\n        "
   },
+  "3ee3d7433863b63c0ae5b83bb5d42ecee4f5bdf7eecd7880a60086208144c7eb": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "title",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": [
+          "Int4"
+        ]
+      }
+    },
+    "query": "SELECT * FROM tickets WHERE id = $1"
+  },
   "6801748b927b84721f6b8d64c8d0191a22d6a5249a760bcbcd4f07ffb3d88317": {
     "describe": {
       "columns": [],
@@ -59,6 +91,36 @@
       }
     },
     "query": "\n        INSERT INTO users (user_id, username, password_hash)\n        VALUES ($1, $2, $3)\n        "
+  },
+  "7e944aadc7432674a1118c110a5e4b328a593eb2740a956724f24406e3f1ff20": {
+    "describe": {
+      "columns": [
+        {
+          "name": "id",
+          "ordinal": 0,
+          "type_info": "Int4"
+        },
+        {
+          "name": "title",
+          "ordinal": 1,
+          "type_info": "Text"
+        },
+        {
+          "name": "description",
+          "ordinal": 2,
+          "type_info": "Text"
+        }
+      ],
+      "nullable": [
+        false,
+        false,
+        false
+      ],
+      "parameters": {
+        "Left": []
+      }
+    },
+    "query": "SELECT * FROM tickets ORDER BY id"
   },
   "acf1b96c82ddf18db02e71a0e297c822b46f10add52c54649cf599b883165e58": {
     "describe": {

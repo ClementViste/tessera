@@ -1,0 +1,19 @@
+<header class="title">
+    <h1>Tickets</h1>
+</header>
+
+<header class="text">
+    {% for ticket in tickets %}
+    <p>
+        <a hx-get="/dashboard/tickets/{{ticket.id}}" hx-swap="innerHTML" hx-target=".content">{{ticket.id}} -
+            {{ticket.title}}</a>
+    </p>
+    <p>
+        {{ticket.description|truncate(100)}}
+    </p>
+    {% endfor %}
+</header>
+
+<button hx-get="/dashboard/" hx-swap="innerHTML" hx-target="article" class="back">
+    &lt;- Back
+</button>

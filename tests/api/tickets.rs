@@ -1,4 +1,5 @@
 use crate::helpers::create_and_run_test_app;
+use tessera::routes::{get_ticket, get_tickets};
 
 // Must return a `303 See Other` response,
 // when a `POST` request with valid form data is received at `/dashboard/tickets/new`.
@@ -131,4 +132,133 @@ async fn create_ticket_returns_a_500_when_fatal_database_error() {
     // Because of the dropped column this will trigger a fatal database error.
     let response = test_app.post_tickets(body.into()).await;
     assert_eq!(response.status().as_u16(), 500);
+}
+
+// Must return a `200 Ok` response,
+// when a `GET` request is received at `/dashboard/tickets`.
+#[tokio::test]
+async fn see_tickets_returns_a_200() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let body = "title=Issue with x&description=After doing x";
+    let body2 = "title=Issue with y&description=After doing y";
+    let body3 = "title=Issue with z&description=After doing z";
+
+    test_app.post_tickets(body.into()).await;
+    test_app.post_tickets(body2.into()).await;
+    test_app.post_tickets(body3.into()).await;
+
+    let response = test_app.get_see_tickets().await;
+    assert_eq!(response.status().as_u16(), 200);
+}
+
+// Must return every ticket,
+// when a `GET` request is received at `/dashboard/tickets`.
+#[tokio::test]
+async fn see_tickets_returns_tickets() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let body = "title=Issue with x&description=After doing x";
+    let body2 = "title=Issue with y&description=After doing y";
+    let body3 = "title=Issue with z&description=After doing z";
+
+    test_app.post_tickets(body.into()).await;
+    test_app.post_tickets(body2.into()).await;
+    test_app.post_tickets(body3.into()).await;
+
+    let saved = get_tickets(&test_app.db_pool).await.unwrap();
+
+    let saved_ticket_x = saved.get(0).unwrap();
+    assert_eq!(saved_ticket_x.id, 1);
+    assert_eq!(saved_ticket_x.title, "Issue with x".to_string());
+    assert_eq!(saved_ticket_x.description, "After doing x".to_string());
+
+    let saved_ticket_y = saved.get(1).unwrap();
+    assert_eq!(saved_ticket_y.id, 2);
+    assert_eq!(saved_ticket_y.title, "Issue with y".to_string());
+    assert_eq!(saved_ticket_y.description, "After doing y".to_string());
+
+    let saved_ticket_z = saved.get(2).unwrap();
+    assert_eq!(saved_ticket_z.id, 3);
+    assert_eq!(saved_ticket_z.title, "Issue with z".to_string());
+    assert_eq!(saved_ticket_z.description, "After doing z".to_string());
+}
+
+// Must redirect an unknown user trying to see tickets.
+#[tokio::test]
+async fn see_tickets_redirects_if_not_logged_in() {
+    let test_app = create_and_run_test_app().await;
+
+    let response = test_app.get_see_tickets().await;
+    assert_eq!(response.status().as_u16(), 303);
+    assert_eq!(response.headers().get("Location").unwrap(), "/login");
+}
+
+// Must return a `200 Ok` response,
+// when a `GET` request with a valid ticket id is received at `/dashboard/tickets/{id}`.
+#[tokio::test]
+async fn see_ticket_returns_a_200_when_valid_ticket_id() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let body = "title=Issue with x&description=After doing x";
+
+    test_app.post_tickets(body.into()).await;
+
+    let response = test_app.get_see_ticket(1).await;
+    assert_eq!(response.status().as_u16(), 200);
+}
+
+// Must return a ticket,
+// when a `GET` request with a valid ticket id is received at `/dashboard/tickets/{id}`.
+#[tokio::test]
+async fn see_ticket_returns_ticket() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let body = "title=Issue with x&description=After doing x";
+    let body2 = "title=Issue with y&description=After doing y";
+    let body3 = "title=Issue with z&description=After doing z";
+
+    test_app.post_tickets(body.into()).await;
+    test_app.post_tickets(body2.into()).await;
+    test_app.post_tickets(body3.into()).await;
+
+    let saved_ticket_x = get_ticket(&test_app.db_pool, 1).await.unwrap();
+    assert_eq!(saved_ticket_x.id, 1);
+    assert_eq!(saved_ticket_x.title, "Issue with x".to_string());
+    assert_eq!(saved_ticket_x.description, "After doing x".to_string());
+
+    let saved_ticket_y = get_ticket(&test_app.db_pool, 2).await.unwrap();
+    assert_eq!(saved_ticket_y.id, 2);
+    assert_eq!(saved_ticket_y.title, "Issue with y".to_string());
+    assert_eq!(saved_ticket_y.description, "After doing y".to_string());
+
+    let saved_ticket_z = get_ticket(&test_app.db_pool, 3).await.unwrap();
+    assert_eq!(saved_ticket_z.id, 3);
+    assert_eq!(saved_ticket_z.title, "Issue with z".to_string());
+    assert_eq!(saved_ticket_z.description, "After doing z".to_string());
+}
+
+// Must redirect an unknown user trying to see a ticket.
+#[tokio::test]
+async fn see_ticket_redirects_if_not_logged_in() {
+    let test_app = create_and_run_test_app().await;
+
+    let response = test_app.get_see_ticket(1).await;
+    assert_eq!(response.status().as_u16(), 303);
+    assert_eq!(response.headers().get("Location").unwrap(), "/login");
+}
+
+// Must return a `400 Bad Request` response,
+// when a `GET` request with an invalid ticket id is received at `/dashboard/tickets/{id}`.
+#[tokio::test]
+async fn see_ticket_returns_a_400_when_invalid_ticket_id() {
+    let test_app = create_and_run_test_app().await;
+
+    let response = test_app.get_see_ticket(1).await;
+    assert_eq!(response.status().as_u16(), 303);
+    assert_eq!(response.headers().get("Location").unwrap(), "/login");
 }

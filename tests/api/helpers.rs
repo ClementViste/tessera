@@ -232,6 +232,27 @@ impl TestApp {
             .expect("Failed to execute request")
     }
 
+    /// Creates a `GET` request, send it at `/dashboard/tickets` and then return the response.
+    pub async fn get_see_tickets(&self) -> Response {
+        self.api_client
+            .get(&format!("{}/dashboard/tickets", &self.address))
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
+
+    /// Creates a `GET` request, send it at `/dashboard/tickets/{id}` and then return the response.
+    pub async fn get_see_ticket(&self, ticket_id: i32) -> Response {
+        self.api_client
+            .get(&format!(
+                "{}/dashboard/tickets/{}",
+                &self.address, ticket_id
+            ))
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
+
     /// Creates a `POST` request, send it at `/dashboard/logout` and then return the response.
     pub async fn post_logout(&self) -> Response {
         self.api_client

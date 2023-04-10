@@ -1,6 +1,6 @@
 use crate::{
     authentication::UserId,
-    domain::{NewTicket, TicketDescription, TicketTitle},
+    domain::{NewTicket, TicketDescription, TicketTitle, ValidTicket},
     error::error_chain_fmt,
     utils::see_other,
 };
@@ -20,6 +20,20 @@ use std::fmt::{Debug, Write};
 #[template(path = "create_ticket.html")]
 struct CreateTicketTemplate {
     msg_html: String,
+}
+
+/// Representation of the see tickets template.
+#[derive(Template)]
+#[template(path = "see_tickets.html")]
+struct SeeTicketsTemplate {
+    tickets: Vec<ValidTicket>,
+}
+
+/// Representation of the see ticket template.
+#[derive(Template)]
+#[template(path = "see_ticket.html")]
+struct SeeTicketTemplate {
+    ticket: ValidTicket,
 }
 
 /// Representation of a new ticket created with form data.
@@ -140,4 +154,74 @@ pub async fn insert_ticket(pool: &PgPool, new_ticket: &NewTicket) -> Result<(), 
     .await?;
 
     Ok(())
+}
+
+/// Sees tickets.
+#[tracing::instrument(
+    name = "Seeing tickets",
+    skip(pool, user_id),
+    fields(
+        user_id=%&*user_id
+    )
+)]
+pub async fn see_tickets(
+    pool: web::Data<PgPool>,
+    user_id: web::ReqData<UserId>,
+) -> Result<HttpResponse, NewTicketError> {
+    let tickets = get_tickets(&pool)
+        .await
+        .context("Failed to get the tickets details from the tickets table")?;
+
+    let body = SeeTicketsTemplate { tickets }.render().unwrap();
+
+    Ok(HttpResponse::Ok()
+        .content_type(ContentType::html())
+        .body(body))
+}
+
+/// Return tickets.
+#[tracing::instrument(name = "Getting tickets details from the tickets table", skip(pool))]
+pub async fn get_tickets(pool: &PgPool) -> Result<Vec<ValidTicket>, sqlx::Error> {
+    let tickets = sqlx::query_as!(ValidTicket, "SELECT * FROM tickets ORDER BY id")
+        .fetch_all(pool)
+        .await?;
+
+    Ok(tickets)
+}
+
+/// Sees ticket.
+#[tracing::instrument(
+    name = "Seeing ticket",
+    skip(pool, user_id, ticket_id),
+    fields(
+        user_id=%&*user_id,
+        ticket_id=%ticket_id.0
+    )
+)]
+pub async fn see_ticket(
+    pool: web::Data<PgPool>,
+    user_id: web::ReqData<UserId>,
+    ticket_id: web::Path<(i32,)>,
+) -> Result<HttpResponse, NewTicketError> {
+    let ticket_id = ticket_id.into_inner().0;
+
+    let ticket = get_ticket(&pool, ticket_id)
+        .await
+        .context("Failed to get the ticket details from the tickets table")?;
+
+    let body = SeeTicketTemplate { ticket }.render().unwrap();
+
+    Ok(HttpResponse::Ok()
+        .content_type(ContentType::html())
+        .body(body))
+}
+
+/// Return ticket.
+#[tracing::instrument(name = "Getting ticket details from the tickets table", skip(pool, id))]
+pub async fn get_ticket(pool: &PgPool, id: i32) -> Result<ValidTicket, sqlx::Error> {
+    let ticket = sqlx::query_as!(ValidTicket, r#"SELECT * FROM tickets WHERE id = $1"#, id)
+        .fetch_one(pool)
+        .await?;
+
+    Ok(ticket)
 }

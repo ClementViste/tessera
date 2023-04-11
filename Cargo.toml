@@ -37,6 +37,7 @@ sqlx = { version = "0.6", default-features = false, features = [
     "postgres",
     "migrate",
     "uuid",
+    "chrono",
     "offline",
 ] }
 # Templating engine.
@@ -55,6 +56,8 @@ tracing-subscriber = { version = "0.3", default-features = false, features = [
 tracing-bunyan-formatter = { version = "0.3", default-features = false }
 tracing-log = { version = "0.1", default-features = false }
 tracing-actix-web = { version = "0.7", default-features = false }
+# Time management.
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 # Error handling.
 thiserror = { version = "1", default-features = false }
 anyhow = { version = "1", default-features = false, features = ["std"] }

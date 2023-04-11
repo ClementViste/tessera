@@ -8,6 +8,7 @@
         <a hx-get="/dashboard/tickets/{{ticket.id}}" hx-swap="innerHTML" hx-target=".content">{{ticket.id}} -
             {{ticket.title}}</a>
     </p>
+    <p>Created the {{ticket.created_at}}</p>
     <p>
         {{ticket.description|truncate(100)}}
     </p>

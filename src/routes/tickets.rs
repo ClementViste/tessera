@@ -11,6 +11,7 @@ use actix_web::{
 use actix_web_flash_messages::{FlashMessage, IncomingFlashMessages};
 use anyhow::Context;
 use askama::Template;
+use chrono::Utc;
 use serde::Deserialize;
 use sqlx::PgPool;
 use std::fmt::{Debug, Write};
@@ -144,11 +145,12 @@ pub async fn create_ticket(
 pub async fn insert_ticket(pool: &PgPool, new_ticket: &NewTicket) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-        INSERT INTO tickets (title, description)
-        VALUES ($1, $2)
+        INSERT INTO tickets (title, description, created_at)
+        VALUES ($1, $2, $3)
         "#,
         new_ticket.title.as_ref(),
         new_ticket.description.as_ref(),
+        Utc::now()
     )
     .execute(pool)
     .await?;

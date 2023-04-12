@@ -1,17 +1,18 @@
 {
   "db": "PostgreSQL",
-  "186ddabe5dd31ddadd8f91e7e06db8fe33b1b5094cab26296b826645f2acc250": {
+  "00856e44829154f0b88ef5bdade409556adb079c96ec43561d263052aed3a053": {
     "describe": {
       "columns": [],
       "nullable": [],
       "parameters": {
         "Left": [
           "Text",
-          "Text"
+          "Text",
+          "Timestamptz"
         ]
       }
     },
-    "query": "\n        INSERT INTO tickets (title, description)\n        VALUES ($1, $2)\n        "
+    "query": "\n        INSERT INTO tickets (title, description, created_at)\n        VALUES ($1, $2, $3)\n        "
   },
   "2880480077b654e38b63f423ab40680697a500ffe1af1d1b39108910594b581b": {
     "describe": {
@@ -63,9 +64,15 @@
           "name": "description",
           "ordinal": 2,
           "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
         }
       ],
       "nullable": [
+        false,
         false,
         false,
         false
@@ -109,9 +116,15 @@
           "name": "description",
           "ordinal": 2,
           "type_info": "Text"
+        },
+        {
+          "name": "created_at",
+          "ordinal": 3,
+          "type_info": "Timestamptz"
         }
       ],
       "nullable": [
+        false,
         false,
         false,
         false

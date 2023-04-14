@@ -8,21 +8,24 @@
 {% endblock %}
 
 {% block article %}
-<header class="title">
-    <h3>Welcome!</h3>
-</header>
+<div class="content">
+    <header class="title">
+        <h3>Welcome!</h3>
+    </header>
 
-<header class="text">
-    <p><em>Tessera is a ticket tracker, to start using tessera you need to log in!</em></p>
-</header>
+    <header class="text">
+        <p><em>Tessera is a ticket tracker, to start using tessera you need to log in!</em></p>
+    </header>
 
-<button hx-get="/login" hx-swap="innerHTML" hx-target="article" class="button">
-    Login!
-</button>
+    <button hx-get="/login" hx-swap="innerHTML" hx-target="article" class="button">
+        Login!
+    </button>
 
-<footer class="footer-text">
-    <p><a hx-get="/register" hx-swap="innerHTML" hx-target="article">Don't have an account? Create an account.</a></p>
-</footer>
+    <footer class="text-footer">
+        <p><a hx-get="/register" hx-swap="innerHTML" hx-target="article">Don't have an account? Create an account.</a>
+        </p>
+    </footer>
+</div>
 {% endblock %}
 
 {% block footer %}

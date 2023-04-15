@@ -210,6 +210,57 @@ nav {
     color: red;
 }
 
+.tickets-wrapper {
+    margin: 20px;
+    padding: 5px;
+
+    border-style: groove;
+    border-width: 3px;
+    border-radius: 8px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.tickets-title {
+    width: 100%;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.tickets-title:hover {
+    background-color: orange;
+
+    border-radius: 8px;
+}
+
+.tickets-sub-text {
+    font-size: 0.8em;
+
+    align-self: self-start;
+}
+
+.ticket-wrapper {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket-title {
+    font-size: 2em;
+}
+
+.ticket-created-at {
+    font-size: 0.6em;
+
+    align-self: self-start;
+}
+
+.ticket-description {
+    margin: 50px 20px 20px 20px;
+}
+
 .form {
     padding: 30px;
     margin: 5px;

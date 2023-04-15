@@ -1,11 +1,19 @@
 <header class="title">
-    <h3>Ticket #{{ticket.id}} - {{ticket.title}}</h3>
+    <h3>Ticket #{{ticket.id}}</h3>
 </header>
 
-<header class="text">
-    <p>{{ticket.description}}</p>
-</header>
+<div class="ticket-wrapper">
+    <header class="ticket-title">
+        <p>{{ticket.title}}</p>
+    </header>
+    <div class="ticket-created-at">
+        <p>Created the {{ticket.created_at}}</p>
+    </div>
+    <div class="ticket-description">
+        <p>{{ticket.description}}</p>
+    </div>
+</div>
 
-<button hx-get="/dashboard/" hx-swap="innerHTML" hx-target="article" class="back">
+<button hx-get="/dashboard/tickets" hx-swap="innerHTML" hx-target=".content" class="back">
     &lt;- Back
 </button>

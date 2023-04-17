@@ -2,6 +2,7 @@ use crate::{
     authentication::UserId,
     domain::{NewTicket, TicketDescription, TicketTitle, ValidTicket},
     error::error_chain_fmt,
+    helpers::get_username,
     utils::see_other,
 };
 use actix_web::{
@@ -126,8 +127,11 @@ pub async fn create_ticket(
     user_id: web::ReqData<UserId>,
 ) -> Result<HttpResponse, NewTicketError> {
     let new_ticket = form.0.try_into().map_err(NewTicketError::ValidationError)?;
+    let created_by = get_username(&pool, **user_id)
+        .await
+        .map_err(NewTicketError::UnexpectedError)?;
 
-    insert_ticket(&pool, &new_ticket)
+    insert_ticket(&pool, &new_ticket, created_by)
         .await
         .context("Failed to insert the new ticket details into the tickets table")?;
 
@@ -142,15 +146,20 @@ pub async fn create_ticket(
     name = "Inserting the new ticket details into the tickets table",
     skip(pool, new_ticket)
 )]
-pub async fn insert_ticket(pool: &PgPool, new_ticket: &NewTicket) -> Result<(), sqlx::Error> {
+pub async fn insert_ticket(
+    pool: &PgPool,
+    new_ticket: &NewTicket,
+    created_by: String,
+) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-        INSERT INTO tickets (title, description, created_at)
-        VALUES ($1, $2, $3)
+        INSERT INTO tickets (title, description, created_at, created_by)
+        VALUES ($1, $2, $3, $4)
         "#,
         new_ticket.title.as_ref(),
         new_ticket.description.as_ref(),
-        Utc::now()
+        Utc::now(),
+        created_by
     )
     .execute(pool)
     .await?;

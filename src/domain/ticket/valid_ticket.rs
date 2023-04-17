@@ -7,4 +7,5 @@ pub struct ValidTicket {
     pub title: String,
     pub description: String,
     pub created_at: DateTime<Utc>,
+    pub created_by: String,
 }

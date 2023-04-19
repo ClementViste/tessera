@@ -174,16 +174,19 @@ async fn see_tickets_returns_tickets() {
     assert_eq!(saved_ticket_x.id, 1);
     assert_eq!(saved_ticket_x.title, "Issue with x".to_string());
     assert_eq!(saved_ticket_x.description, "After doing x".to_string());
+    assert!(saved_ticket_x.is_open);
 
     let saved_ticket_y = saved.get(1).unwrap();
     assert_eq!(saved_ticket_y.id, 2);
     assert_eq!(saved_ticket_y.title, "Issue with y".to_string());
     assert_eq!(saved_ticket_y.description, "After doing y".to_string());
+    assert!(saved_ticket_y.is_open);
 
     let saved_ticket_z = saved.get(2).unwrap();
     assert_eq!(saved_ticket_z.id, 3);
     assert_eq!(saved_ticket_z.title, "Issue with z".to_string());
     assert_eq!(saved_ticket_z.description, "After doing z".to_string());
+    assert!(saved_ticket_z.is_open);
 }
 
 // Must redirect an unknown user trying to see tickets.
@@ -230,16 +233,19 @@ async fn see_ticket_returns_ticket() {
     assert_eq!(saved_ticket_x.id, 1);
     assert_eq!(saved_ticket_x.title, "Issue with x".to_string());
     assert_eq!(saved_ticket_x.description, "After doing x".to_string());
+    assert!(saved_ticket_x.is_open);
 
     let saved_ticket_y = get_ticket(&test_app.db_pool, 2).await.unwrap();
     assert_eq!(saved_ticket_y.id, 2);
     assert_eq!(saved_ticket_y.title, "Issue with y".to_string());
     assert_eq!(saved_ticket_y.description, "After doing y".to_string());
+    assert!(saved_ticket_y.is_open);
 
     let saved_ticket_z = get_ticket(&test_app.db_pool, 3).await.unwrap();
     assert_eq!(saved_ticket_z.id, 3);
     assert_eq!(saved_ticket_z.title, "Issue with z".to_string());
     assert_eq!(saved_ticket_z.description, "After doing z".to_string());
+    assert!(saved_ticket_z.is_open);
 }
 
 // Must redirect an unknown user trying to see a ticket.

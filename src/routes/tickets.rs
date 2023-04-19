@@ -153,13 +153,14 @@ pub async fn insert_ticket(
 ) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-        INSERT INTO tickets (title, description, created_at, created_by)
-        VALUES ($1, $2, $3, $4)
+        INSERT INTO tickets (title, description, created_at, created_by, is_open)
+        VALUES ($1, $2, $3, $4, $5)
         "#,
         new_ticket.title.as_ref(),
         new_ticket.description.as_ref(),
         Utc::now(),
-        created_by
+        created_by,
+        true
     )
     .execute(pool)
     .await?;

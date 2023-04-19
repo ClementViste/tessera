@@ -8,4 +8,5 @@ pub struct ValidTicket {
     pub description: String,
     pub created_at: DateTime<Utc>,
     pub created_by: String,
+    pub is_open: bool,
 }

@@ -151,6 +151,8 @@ nav {
 .image-ticket,
 .image-create-ticket,
 .image-see-tickets,
+.image-ticket-open,
+.image-ticket-close,
 .image-settings,
 .image-change-password,
 .image-logout {
@@ -161,6 +163,8 @@ nav {
 
 .image-create-ticket,
 .image-see-tickets,
+.image-ticket-open,
+.image-ticket-close,
 .image-change-password {
     margin-left: 30px;
     margin-right: 30px;
@@ -211,6 +215,8 @@ nav {
 }
 
 .tickets-wrapper {
+    background-color: lightgray;
+
     margin: 20px;
     padding: 5px;
 
@@ -243,12 +249,20 @@ nav {
 }
 
 .ticket-wrapper {
+    background-color: lightgray;
+
+    border-style: groove;
+    border-width: 3px;
+    border-radius: 8px;
+
     display: flex;
     flex-direction: column;
 }
 
 .ticket-title {
     font-size: 2em;
+
+    display: flex
 }
 
 .ticket-created-at {

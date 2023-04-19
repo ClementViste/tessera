@@ -4,6 +4,11 @@
 
 <div class="ticket-wrapper">
     <header class="ticket-title">
+        {% if ticket.is_open -%}
+        <img class="image-ticket-open" src="/static/images/open.svg" alt="A green V showing that this ticket is open">
+        {% else -%}
+        <img class="image-ticket-close" src="/static/images/close.svg" alt="A red X showing that this ticket is closed">
+        {%- endif %}
         <p>{{ticket.title}}</p>
     </header>
     <div class="ticket-created-at">

@@ -6,6 +6,13 @@
     {% for ticket in tickets %}
     <div class="tickets-wrapper">
         <p class="tickets-title" hx-get="/dashboard/tickets/{{ticket.id}}" hx-swap="innerHTML" hx-target=".content">
+            {% if ticket.is_open -%}
+            <img class="image-ticket-open" src="/static/images/open.svg"
+                alt="A green V showing that this ticket is open">
+            {% else -%}
+            <img class="image-ticket-close" src="/static/images/close.svg"
+                alt="A red X showing that this ticket is closed">
+            {%- endif %}
             <a>{{ticket.title}}</a>
         </p>
         <p class="tickets-sub-text">

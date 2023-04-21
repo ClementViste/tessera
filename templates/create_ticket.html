@@ -10,7 +10,7 @@
     <p><em>{{msg_html}}</em></p>
 </header>
 
-<form hx-post="/dashboard/tickets/new" hx-swap="innerHTML" hx-target="article" class="form">
+<form hx-post="/dashboard/tickets/new" hx-swap="innerHTML" hx-target=".content" class="form">
     <div class="form-row">
         <label for="title">Title</label>
         <input id="title" name="title" type="text" placeholder="Enter title" required>

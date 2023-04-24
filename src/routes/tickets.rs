@@ -35,6 +35,7 @@ struct SeeTicketsTemplate {
 #[derive(Template)]
 #[template(path = "see_ticket.html")]
 struct SeeTicketTemplate {
+    msg_html: String,
     ticket: ValidTicket,
 }
 
@@ -204,7 +205,7 @@ pub async fn get_tickets(pool: &PgPool) -> Result<Vec<ValidTicket>, sqlx::Error>
 /// Sees ticket.
 #[tracing::instrument(
     name = "Seeing ticket",
-    skip(pool, user_id, ticket_id),
+    skip(pool, flash_messages, user_id, ticket_id),
     fields(
         user_id=%&*user_id,
         ticket_id=%ticket_id.0
@@ -212,16 +213,23 @@ pub async fn get_tickets(pool: &PgPool) -> Result<Vec<ValidTicket>, sqlx::Error>
 )]
 pub async fn see_ticket(
     pool: web::Data<PgPool>,
+    flash_messages: IncomingFlashMessages,
     user_id: web::ReqData<UserId>,
     ticket_id: web::Path<(i32,)>,
 ) -> Result<HttpResponse, NewTicketError> {
+    // Get notification.
+    let mut msg_html = String::new();
+    for m in flash_messages.iter() {
+        writeln!(msg_html, "{}", m.content()).unwrap();
+    }
+
     let ticket_id = ticket_id.into_inner().0;
 
     let ticket = get_ticket(&pool, ticket_id)
         .await
         .context("Failed to get the ticket details from the tickets table")?;
 
-    let body = SeeTicketTemplate { ticket }.render().unwrap();
+    let body = SeeTicketTemplate { msg_html, ticket }.render().unwrap();
 
     Ok(HttpResponse::Ok()
         .content_type(ContentType::html())
@@ -236,4 +244,52 @@ pub async fn get_ticket(pool: &PgPool, id: i32) -> Result<ValidTicket, sqlx::Err
         .await?;
 
     Ok(ticket)
+}
+
+/// Closes ticket.
+#[tracing::instrument(
+    name = "Closing ticket",
+    skip(pool, user_id, ticket_id),
+    fields(
+        user_id=%&*user_id,
+        ticket_id=%ticket_id.0
+    )
+)]
+pub async fn close_ticket(
+    pool: web::Data<PgPool>,
+    user_id: web::ReqData<UserId>,
+    ticket_id: web::Path<(i32,)>,
+) -> Result<HttpResponse, NewTicketError> {
+    let ticket_id = ticket_id.into_inner().0;
+
+    update_is_open(&pool, ticket_id, false)
+        .await
+        .context("Failed to update the `is_open` field from the tickets table")?;
+
+    // Send notification.
+    FlashMessage::info("You have successfully closed this ticket.").send();
+
+    let location = format!("/dashboard/tickets/{}", ticket_id);
+    Ok(see_other(location.as_str()))
+}
+
+/// Updates the `is_open` field from the tickets table.
+#[tracing::instrument(
+    name = "Updating the `is_open` field from the tickets table",
+    skip(pool, id)
+)]
+async fn update_is_open(pool: &PgPool, id: i32, new_status: bool) -> Result<(), sqlx::Error> {
+    sqlx::query!(
+        r#"
+        UPDATE tickets
+        SET is_open = $1
+        WHERE id = $2
+        "#,
+        new_status,
+        id
+    )
+    .execute(pool)
+    .await?;
+
+    Ok(())
 }

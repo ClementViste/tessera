@@ -253,6 +253,23 @@ impl TestApp {
             .expect("Failed to execute request")
     }
 
+    /// Returns the see ticket form full response text.
+    pub async fn get_see_ticket_html(&self, ticket_id: i32) -> String {
+        self.get_see_ticket(ticket_id).await.text().await.unwrap()
+    }
+
+    /// Creates a `POST` request, send it at `/dashboard/tickets/{id}/close` and then return the response.
+    pub async fn post_close_ticket(&self, ticket_id: i32) -> Response {
+        self.api_client
+            .post(&format!(
+                "{}/dashboard/tickets/{}/close",
+                &self.address, ticket_id
+            ))
+            .send()
+            .await
+            .expect("Failed to execute request")
+    }
+
     /// Creates a `POST` request, send it at `/dashboard/logout` and then return the response.
     pub async fn post_logout(&self) -> Response {
         self.api_client

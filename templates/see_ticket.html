@@ -2,6 +2,10 @@
     <h3>Ticket #{{ticket.id}}</h3>
 </header>
 
+<header class="msg_html">
+    <p><em>{{msg_html}}</em></p>
+</header>
+
 <div class="ticket-wrapper">
     <header class="ticket-title">
         {% if ticket.is_open -%}
@@ -18,6 +22,12 @@
         <p>{{ticket.description}}</p>
     </div>
 </div>
+
+{% if ticket.is_open -%}
+<button hx-post="/dashboard/tickets/{{ticket.id}}/close" hx-swap="innerHTML" hx-target=".content" class="button">
+    Close this ticket
+</button>
+{%- endif %}
 
 <button hx-get="/dashboard/tickets" hx-swap="innerHTML" hx-target=".content" class="back">
     &lt;- Back

@@ -268,3 +268,63 @@ async fn see_ticket_returns_a_400_when_invalid_ticket_id() {
     assert_eq!(response.status().as_u16(), 303);
     assert_eq!(response.headers().get("Location").unwrap(), "/login");
 }
+
+// Must return a `303 See Other` response,
+// when a `POST` request with a valid ticket id is received at `/dashboard/tickets/{id}/close`.
+#[tokio::test]
+async fn close_ticket_returns_a_303_when_valid_ticket_id() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let body = "title=Issue with ...&description=After doing ...";
+
+    test_app.post_tickets(body.into()).await;
+
+    let response = test_app.post_close_ticket(1).await;
+    assert_eq!(response.status().as_u16(), 303);
+
+    let html_page = test_app.get_see_ticket_html(1).await;
+    assert!(html_page.contains("You have successfully closed this ticket."));
+}
+
+// Must close a ticket,
+// when a `POST` request with a valid ticket id is received at `/dashboard/tickets/{id}/close`.
+#[tokio::test]
+async fn close_ticket_closes_ticket() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let body = "title=Issue with x&description=After doing x";
+
+    test_app.post_tickets(body.into()).await;
+
+    test_app.post_close_ticket(1).await;
+
+    let saved_ticket_x = get_ticket(&test_app.db_pool, 1).await.unwrap();
+    assert!(!saved_ticket_x.is_open);
+}
+
+// Must redirect an unknown user trying to close a ticket.
+#[tokio::test]
+async fn close_ticket_redirects_if_not_logged_in() {
+    let test_app = create_and_run_test_app().await;
+
+    let response = test_app.post_close_ticket(1).await;
+    assert_eq!(response.status().as_u16(), 303);
+    assert_eq!(response.headers().get("Location").unwrap(), "/login");
+}
+
+// Must return a `303 See Other` response,
+// when a `POST` request with an invalid ticket id is received at `/dashboard/tickets/{id}/close`.
+#[tokio::test]
+async fn close_ticket_returns_a_303_when_invalid_ticket_id() {
+    let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
+
+    let response = test_app.post_close_ticket(1).await;
+    assert_eq!(response.status().as_u16(), 303);
+    assert_eq!(
+        response.headers().get("Location").unwrap(),
+        "/dashboard/tickets/1"
+    );
+}

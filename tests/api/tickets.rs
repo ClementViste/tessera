@@ -258,15 +258,15 @@ async fn see_ticket_redirects_if_not_logged_in() {
     assert_eq!(response.headers().get("Location").unwrap(), "/login");
 }
 
-// Must return a `400 Bad Request` response,
+// Must return a `500 Internal Server Error` response,
 // when a `GET` request with an invalid ticket id is received at `/dashboard/tickets/{id}`.
 #[tokio::test]
-async fn see_ticket_returns_a_400_when_invalid_ticket_id() {
+async fn see_ticket_returns_a_500_when_invalid_ticket_id() {
     let test_app = create_and_run_test_app().await;
+    test_app.test_user.login(&test_app).await;
 
     let response = test_app.get_see_ticket(1).await;
-    assert_eq!(response.status().as_u16(), 303);
-    assert_eq!(response.headers().get("Location").unwrap(), "/login");
+    assert_eq!(response.status().as_u16(), 500);
 }
 
 // Must return a `303 See Other` response,

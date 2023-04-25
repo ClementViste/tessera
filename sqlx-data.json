@@ -161,6 +161,19 @@
     },
     "query": "SELECT * FROM tickets ORDER BY id"
   },
+  "854c209db17ad1d4dacba11d42383d0b278b787cfad1149b3c4216b38a98cab4": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Bool",
+          "Int4"
+        ]
+      }
+    },
+    "query": "\n        UPDATE tickets\n        SET is_open = $1\n        WHERE id = $2\n        "
+  },
   "acf1b96c82ddf18db02e71a0e297c822b46f10add52c54649cf599b883165e58": {
     "describe": {
       "columns": [

@@ -60,21 +60,21 @@ impl TryFrom<NewTicketFormData> for NewTicket {
 
 /// Representation of a new ticket error.
 #[derive(thiserror::Error)]
-pub enum NewTicketError {
+pub enum TicketError {
     #[error("Validation error: {0}")]
     ValidationError(String),
     #[error(transparent)]
     UnexpectedError(#[from] anyhow::Error),
 }
 
-impl Debug for NewTicketError {
+impl Debug for TicketError {
     /// Formats the value using the given formatter.
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         error_chain_fmt(self, f)
     }
 }
 
-impl ResponseError for NewTicketError {
+impl ResponseError for TicketError {
     /// Creates full response for error.
     fn error_response(&self) -> HttpResponse {
         let msg_html = self.to_string();
@@ -89,8 +89,8 @@ impl ResponseError for NewTicketError {
     /// Returns appropriate status code for error.
     fn status_code(&self) -> StatusCode {
         match self {
-            NewTicketError::ValidationError(_) => StatusCode::BAD_REQUEST,
-            NewTicketError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
+            TicketError::ValidationError(_) => StatusCode::BAD_REQUEST,
+            TicketError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
         }
     }
 }
@@ -126,11 +126,11 @@ pub async fn create_ticket(
     pool: web::Data<PgPool>,
     form: web::Form<NewTicketFormData>,
     user_id: web::ReqData<UserId>,
-) -> Result<HttpResponse, NewTicketError> {
-    let new_ticket = form.0.try_into().map_err(NewTicketError::ValidationError)?;
+) -> Result<HttpResponse, TicketError> {
+    let new_ticket = form.0.try_into().map_err(TicketError::ValidationError)?;
     let created_by = get_username(&pool, **user_id)
         .await
-        .map_err(NewTicketError::UnexpectedError)?;
+        .map_err(TicketError::UnexpectedError)?;
 
     insert_ticket(&pool, &new_ticket, created_by)
         .await
@@ -180,7 +180,7 @@ pub async fn insert_ticket(
 pub async fn see_tickets(
     pool: web::Data<PgPool>,
     user_id: web::ReqData<UserId>,
-) -> Result<HttpResponse, NewTicketError> {
+) -> Result<HttpResponse, TicketError> {
     let tickets = get_tickets(&pool)
         .await
         .context("Failed to get the tickets details from the tickets table")?;
@@ -216,7 +216,7 @@ pub async fn see_ticket(
     flash_messages: IncomingFlashMessages,
     user_id: web::ReqData<UserId>,
     ticket_id: web::Path<(i32,)>,
-) -> Result<HttpResponse, NewTicketError> {
+) -> Result<HttpResponse, TicketError> {
     // Get notification.
     let mut msg_html = String::new();
     for m in flash_messages.iter() {
@@ -259,7 +259,7 @@ pub async fn close_ticket(
     pool: web::Data<PgPool>,
     user_id: web::ReqData<UserId>,
     ticket_id: web::Path<(i32,)>,
-) -> Result<HttpResponse, NewTicketError> {
+) -> Result<HttpResponse, TicketError> {
     let ticket_id = ticket_id.into_inner().0;
 
     update_is_open(&pool, ticket_id, false)

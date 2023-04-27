@@ -302,6 +302,9 @@ async fn close_ticket_closes_ticket() {
 
     let saved_ticket_x = get_ticket(&test_app.db_pool, 1).await.unwrap();
     assert!(!saved_ticket_x.is_open);
+
+    let html_page = test_app.get_see_ticket_html(1).await;
+    assert!(html_page.contains("You have successfully closed this ticket."));
 }
 
 // Must redirect an unknown user trying to close a ticket.
@@ -327,4 +330,7 @@ async fn close_ticket_returns_a_303_when_invalid_ticket_id() {
         response.headers().get("Location").unwrap(),
         "/dashboard/tickets/1"
     );
+
+    let html_page = test_app.get_see_ticket_html(1).await;
+    assert!(html_page.contains("Failed to get the ticket details from the tickets table"));
 }

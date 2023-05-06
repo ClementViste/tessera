@@ -44,6 +44,7 @@ struct SeeTicketTemplate {
 pub struct NewTicketFormData {
     title: String,
     description: String,
+    priority: String,
 }
 
 impl TryFrom<NewTicketFormData> for NewTicket {
@@ -53,8 +54,13 @@ impl TryFrom<NewTicketFormData> for NewTicket {
     fn try_from(value: NewTicketFormData) -> Result<Self, Self::Error> {
         let title = TicketTitle::parse(value.title)?;
         let description = TicketDescription::parse(value.description)?;
+        let priority = value.priority;
 
-        Ok(Self { title, description })
+        Ok(Self {
+            title,
+            description,
+            priority,
+        })
     }
 }
 
@@ -154,14 +160,15 @@ pub async fn insert_ticket(
 ) -> Result<(), sqlx::Error> {
     sqlx::query!(
         r#"
-        INSERT INTO tickets (title, description, created_at, created_by, is_open)
-        VALUES ($1, $2, $3, $4, $5)
+        INSERT INTO tickets (title, description, created_at, created_by, is_open, priority)
+        VALUES ($1, $2, $3, $4, $5, $6)
         "#,
         new_ticket.title.as_ref(),
         new_ticket.description.as_ref(),
         Utc::now(),
         created_by,
-        true
+        true,
+        new_ticket.priority,
     )
     .execute(pool)
     .await?;

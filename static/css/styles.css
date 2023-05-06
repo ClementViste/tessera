@@ -313,6 +313,17 @@ nav {
     resize: none;
 }
 
+.form-row select {
+    font-size: 0.8em;
+
+    padding: 7px;
+
+    width: 100%;
+
+    border: 1px solid white;
+    border-radius: 3px;
+}
+
 .form-row label {
     margin-bottom: 15px;
 }

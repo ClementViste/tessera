@@ -9,4 +9,5 @@ pub struct ValidTicket {
     pub created_at: DateTime<Utc>,
     pub created_by: String,
     pub is_open: bool,
+    pub priority: String,
 }

@@ -16,7 +16,7 @@
             <a>{{ticket.title}}</a>
         </p>
         <p class="tickets-sub-text">
-            #{{ticket.id}} - Created the {{ticket.created_at}} by {{ticket.created_by}}
+            #{{ticket.id}} - {{ticket.priority}} priority - Created the {{ticket.created_at}} by {{ticket.created_by}}
         </p>
     </div>
     {% endfor %}

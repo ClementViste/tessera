@@ -8,7 +8,7 @@ async fn create_ticket_returns_a_303_when_valid_form_data() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with ...&description=After doing ...";
+    let body = "title=Issue with ...&description=After doing ...&priority=medium";
 
     let response = test_app.post_tickets(body.into()).await;
     assert_eq!(response.status().as_u16(), 303);
@@ -24,16 +24,17 @@ async fn create_ticket_persists_the_new_ticket() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with ...&description=After doing ...";
+    let body = "title=Issue with ...&description=After doing ...&priority=medium";
 
     test_app.post_tickets(body.into()).await;
 
-    let saved = sqlx::query!("SELECT title, description FROM tickets")
+    let saved = sqlx::query!("SELECT title, description, priority FROM tickets")
         .fetch_one(&test_app.db_pool)
         .await
         .expect("Failed to fetch the saved ticket");
     assert_eq!(saved.title, "Issue with ...");
     assert_eq!(saved.description, "After doing ...");
+    assert_eq!(saved.priority, "medium");
 }
 
 // Must redirect an unknown user trying to access the create ticket form.
@@ -66,9 +67,19 @@ async fn create_ticket_returns_a_400_when_missing_data() {
     test_app.test_user.login(&test_app).await;
 
     let test_cases = vec![
-        ("title=Issue with ...", "missing the description"),
-        ("description=After doing ...", "missing the title"),
-        ("", "missing both title and description"),
+        (
+            "title=Issue with ...&priority=medium",
+            "missing the description",
+        ),
+        (
+            "description=After doing ...&priority=medium",
+            "missing the title",
+        ),
+        (
+            "title=Issue with ...&description=After doing ...",
+            "missing the priority",
+        ),
+        ("", "missing everything"),
     ];
 
     for (invalid_body, error_message) in test_cases {
@@ -91,17 +102,18 @@ async fn create_ticket_returns_a_400_when_invalid_data() {
 
     let test_cases = vec![
         (
-            "title=Issue with ...&description=",
+            "title=Issue with ...&description=&priority=medium",
             "missing a correct description",
         ),
         (
-            "title=&description=After doing ...",
+            "title=&description=After doing ...&priority=medium",
             "missing a correct title",
         ),
         (
-            "title=&description=",
-            "missing a correct title and description",
+            "title=Issue with ...&description=After doing ...",
+            "missing a correct priority",
         ),
+        ("title=&description=&priority=", "missing everything"),
     ];
 
     for (invalid_body, error_message) in test_cases {
@@ -122,7 +134,7 @@ async fn create_ticket_returns_a_500_when_fatal_database_error() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with ...&description=After doing ...";
+    let body = "title=Issue with ...&description=After doing ...&priority=medium";
 
     sqlx::query!("ALTER TABLE tickets DROP COLUMN title",)
         .execute(&test_app.db_pool)
@@ -141,9 +153,9 @@ async fn see_tickets_returns_a_200() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with x&description=After doing x";
-    let body2 = "title=Issue with y&description=After doing y";
-    let body3 = "title=Issue with z&description=After doing z";
+    let body = "title=Issue with x&description=After doing x&priority=medium";
+    let body2 = "title=Issue with y&description=After doing y&priority=medium";
+    let body3 = "title=Issue with z&description=After doing z&priority=medium";
 
     test_app.post_tickets(body.into()).await;
     test_app.post_tickets(body2.into()).await;
@@ -160,9 +172,9 @@ async fn see_tickets_returns_tickets() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with x&description=After doing x";
-    let body2 = "title=Issue with y&description=After doing y";
-    let body3 = "title=Issue with z&description=After doing z";
+    let body = "title=Issue with x&description=After doing x&priority=medium";
+    let body2 = "title=Issue with y&description=After doing y&priority=medium";
+    let body3 = "title=Issue with z&description=After doing z&priority=medium";
 
     test_app.post_tickets(body.into()).await;
     test_app.post_tickets(body2.into()).await;
@@ -174,18 +186,21 @@ async fn see_tickets_returns_tickets() {
     assert_eq!(saved_ticket_x.id, 1);
     assert_eq!(saved_ticket_x.title, "Issue with x".to_string());
     assert_eq!(saved_ticket_x.description, "After doing x".to_string());
+    assert_eq!(saved_ticket_x.priority, "medium".to_string());
     assert!(saved_ticket_x.is_open);
 
     let saved_ticket_y = saved.get(1).unwrap();
     assert_eq!(saved_ticket_y.id, 2);
     assert_eq!(saved_ticket_y.title, "Issue with y".to_string());
     assert_eq!(saved_ticket_y.description, "After doing y".to_string());
+    assert_eq!(saved_ticket_y.priority, "medium".to_string());
     assert!(saved_ticket_y.is_open);
 
     let saved_ticket_z = saved.get(2).unwrap();
     assert_eq!(saved_ticket_z.id, 3);
     assert_eq!(saved_ticket_z.title, "Issue with z".to_string());
     assert_eq!(saved_ticket_z.description, "After doing z".to_string());
+    assert_eq!(saved_ticket_z.priority, "medium".to_string());
     assert!(saved_ticket_z.is_open);
 }
 
@@ -206,7 +221,7 @@ async fn see_ticket_returns_a_200_when_valid_ticket_id() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with x&description=After doing x";
+    let body = "title=Issue with x&description=After doing x&priority=medium";
 
     test_app.post_tickets(body.into()).await;
 
@@ -221,9 +236,9 @@ async fn see_ticket_returns_ticket() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with x&description=After doing x";
-    let body2 = "title=Issue with y&description=After doing y";
-    let body3 = "title=Issue with z&description=After doing z";
+    let body = "title=Issue with x&description=After doing x&priority=medium";
+    let body2 = "title=Issue with y&description=After doing y&priority=medium";
+    let body3 = "title=Issue with z&description=After doing z&priority=medium";
 
     test_app.post_tickets(body.into()).await;
     test_app.post_tickets(body2.into()).await;
@@ -233,18 +248,21 @@ async fn see_ticket_returns_ticket() {
     assert_eq!(saved_ticket_x.id, 1);
     assert_eq!(saved_ticket_x.title, "Issue with x".to_string());
     assert_eq!(saved_ticket_x.description, "After doing x".to_string());
+    assert_eq!(saved_ticket_x.priority, "medium".to_string());
     assert!(saved_ticket_x.is_open);
 
     let saved_ticket_y = get_ticket(&test_app.db_pool, 2).await.unwrap();
     assert_eq!(saved_ticket_y.id, 2);
     assert_eq!(saved_ticket_y.title, "Issue with y".to_string());
     assert_eq!(saved_ticket_y.description, "After doing y".to_string());
+    assert_eq!(saved_ticket_y.priority, "medium".to_string());
     assert!(saved_ticket_y.is_open);
 
     let saved_ticket_z = get_ticket(&test_app.db_pool, 3).await.unwrap();
     assert_eq!(saved_ticket_z.id, 3);
     assert_eq!(saved_ticket_z.title, "Issue with z".to_string());
     assert_eq!(saved_ticket_z.description, "After doing z".to_string());
+    assert_eq!(saved_ticket_z.priority, "medium".to_string());
     assert!(saved_ticket_z.is_open);
 }
 
@@ -276,7 +294,7 @@ async fn close_ticket_returns_a_303_when_valid_ticket_id() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with ...&description=After doing ...";
+    let body = "title=Issue with ...&description=After doing ...&priority=medium";
 
     test_app.post_tickets(body.into()).await;
 
@@ -294,7 +312,7 @@ async fn close_ticket_closes_ticket() {
     let test_app = create_and_run_test_app().await;
     test_app.test_user.login(&test_app).await;
 
-    let body = "title=Issue with x&description=After doing x";
+    let body = "title=Issue with x&description=After doing x&priority=medium";
 
     test_app.post_tickets(body.into()).await;
 

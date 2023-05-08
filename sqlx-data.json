@@ -1,21 +1,5 @@
 {
   "db": "PostgreSQL",
-  "14cb6d8dafafdef9005e738b2fedc1fb2676b4b6232abc34def6cf5e0d991512": {
-    "describe": {
-      "columns": [],
-      "nullable": [],
-      "parameters": {
-        "Left": [
-          "Text",
-          "Text",
-          "Timestamptz",
-          "Text",
-          "Bool"
-        ]
-      }
-    },
-    "query": "\n        INSERT INTO tickets (title, description, created_at, created_by, is_open)\n        VALUES ($1, $2, $3, $4, $5)\n        "
-  },
   "2880480077b654e38b63f423ab40680697a500ffe1af1d1b39108910594b581b": {
     "describe": {
       "columns": [],
@@ -81,9 +65,15 @@
           "name": "is_open",
           "ordinal": 5,
           "type_info": "Bool"
+        },
+        {
+          "name": "priority",
+          "ordinal": 6,
+          "type_info": "Text"
         }
       ],
       "nullable": [
+        false,
         false,
         false,
         false,
@@ -98,6 +88,23 @@
       }
     },
     "query": "SELECT * FROM tickets WHERE id = $1"
+  },
+  "51fbc520e2d5d72ed5687070bfff394bafc5926653ae295c477d096ea9268850": {
+    "describe": {
+      "columns": [],
+      "nullable": [],
+      "parameters": {
+        "Left": [
+          "Text",
+          "Text",
+          "Timestamptz",
+          "Text",
+          "Bool",
+          "Text"
+        ]
+      }
+    },
+    "query": "\n        INSERT INTO tickets (title, description, created_at, created_by, is_open, priority)\n        VALUES ($1, $2, $3, $4, $5, $6)\n        "
   },
   "6801748b927b84721f6b8d64c8d0191a22d6a5249a760bcbcd4f07ffb3d88317": {
     "describe": {
@@ -145,9 +152,15 @@
           "name": "is_open",
           "ordinal": 5,
           "type_info": "Bool"
+        },
+        {
+          "name": "priority",
+          "ordinal": 6,
+          "type_info": "Text"
         }
       ],
       "nullable": [
+        false,
         false,
         false,
         false,

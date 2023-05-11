@@ -170,6 +170,12 @@ nav {
     margin-right: 30px;
 }
 
+.htmx-indicator {
+    max-width: 36px;
+
+    align-self: center;
+}
+
 .title {
     background: linear-gradient(to right, orange, darkorange);
 

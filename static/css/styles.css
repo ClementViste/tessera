@@ -153,6 +153,9 @@ nav {
 .image-see-tickets,
 .image-ticket-open,
 .image-ticket-close,
+.image-ticket-high-priority,
+.image-ticket-medium-priority,
+.image-ticket-low-priority,
 .image-settings,
 .image-change-password,
 .image-logout {
@@ -163,11 +166,14 @@ nav {
 
 .image-create-ticket,
 .image-see-tickets,
-.image-ticket-open,
-.image-ticket-close,
 .image-change-password {
     margin-left: 30px;
     margin-right: 30px;
+}
+
+.image-ticket-open,
+.image-ticket-close {
+    margin-right: 0px;
 }
 
 .htmx-indicator {

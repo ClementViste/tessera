@@ -1,5 +1,5 @@
 <header class="title">
-    <h3>Ticket #{{ticket.id}} - {{ticket.priority}} priority</h3>
+    <h3>See ticket</h3>
 </header>
 
 <header class="msg_html">
@@ -13,10 +13,20 @@
         {% else -%}
         <img class="image-ticket-close" src="/static/images/close.svg" alt="A red X showing that this ticket is closed">
         {%- endif %}
+        {% if ticket.priority == "high" -%}
+        <img class="image-ticket-high-priority" src="/static/images/high-priority.svg"
+            alt="A green exclamation mark showing that this ticket is high priority" title="high priority">
+        {% else if ticket.priority == "medium" -%}
+        <img class="image-ticket-medium-priority" src="/static/images/medium-priority.svg"
+            alt="An orange exclamation mark showing that this ticket is medium priority" title="medium priority">
+        {% else -%}
+        <img class="image-ticket-low-priority" src="/static/images/low-priority.svg"
+            alt="A green exclamation mark showing that this ticket is low priority" title="low priority">
+        {%- endif %}
         <p>{{ticket.title}}</p>
     </header>
-    <div class="ticket-created-at">
-        <p>Created the {{ticket.created_at}} by {{ticket.created_by}}</p>
+    <div class="ticket-sub-text">
+        <p>#{{ticket.id}} - Created the {{ticket.created_at}} by {{ticket.created_by}}</p>
     </div>
     <div class="ticket-description">
         <p>{{ticket.description}}</p>

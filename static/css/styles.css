@@ -267,13 +267,11 @@ nav {
 }
 
 .ticket-title {
-    font-size: 2em;
-
-    display: flex
+    display: flex;
 }
 
-.ticket-created-at {
-    font-size: 0.6em;
+.ticket-sub-text {
+    font-size: 0.8em;
 
     align-self: self-start;
 }

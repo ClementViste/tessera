@@ -23,10 +23,10 @@
             <img class="image-ticket-low-priority" src="/static/images/low-priority.svg"
                 alt="A green exclamation mark showing that this ticket is low priority" title="low priority">
             {%- endif %}
-            <a>{{ticket.title}}</a>
+            {{ticket.title}}
         </p>
         <p class="tickets-sub-text">
-            <a>#{{ticket.id}} - Created the {{ticket.created_at}} by {{ticket.created_by}}</a>
+            #{{ticket.id}} - Created the {{ticket.created_at}} by {{ticket.created_by}}
         </p>
     </div>
     {% endfor %}
